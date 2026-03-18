@@ -1,0 +1,31 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AarhusSpaceProgram.MissionManagement.Api.Models
+{
+    [Table("Astronauts")]
+    public class Astronaut
+    {
+        [Key]
+        [Required]
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(200)]
+        public string Name { get; set; } = null!;
+
+        [Required]
+        [MaxLength(100)]
+        public string Rank { get; set; } = null!;
+
+        [Required]
+        [MaxLength(20)]
+        public string Paygrade { get; set; } = null!;
+
+        [Required]
+        public int HoursInSimulation { get; set; }
+
+        [Required]
+        public int HoursInSpace { get; set; }
+    }
+}
