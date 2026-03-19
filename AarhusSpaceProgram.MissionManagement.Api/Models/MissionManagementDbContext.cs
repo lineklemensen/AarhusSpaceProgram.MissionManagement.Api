@@ -23,6 +23,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             modelBuilder.Entity<Astronaut>()
                 .Property(a => a.Rank)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<Launchpad>()
+                .Property(l => l.Status)
+                .HasConversion<string>();
         }
     }
 }
