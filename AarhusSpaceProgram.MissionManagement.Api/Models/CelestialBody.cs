@@ -18,7 +18,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         [Required]
         public CelestialBodyType BodyType { get; set; }
 
-        public PlanetClass PlanetClass { get; set; }
+        public PlanetClass? PlanetClass { get; set; }
 
         [Required]
         public double DistanceValueAU { get; set; }

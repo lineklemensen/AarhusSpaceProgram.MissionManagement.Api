@@ -27,5 +27,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
 
         [Required]
         public int HoursInSpace { get; set; }
+
+        // Navigation properties
+        public ICollection<MissionAstronautAssignment> MissionAssignments { get; set; } = new List<MissionAstronautAssignment>();
     }
 }

@@ -23,5 +23,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public MissionStatus Status { get; set; }
 
         public MissionType Type { get; set; }
+
+        // Navigation properties
+        public ICollection<MissionAstronautAssignment> AstronautAssignments { get; set; } = new List<MissionAstronautAssignment>();
+        public ICollection<MissionScientistAssignment> ScientistAssignments { get; set; } = new List<MissionScientistAssignment>();
     }
 }
