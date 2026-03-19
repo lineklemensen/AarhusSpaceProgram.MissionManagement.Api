@@ -78,8 +78,16 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     .HasForeignKey(ms => ms.ScientistId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
-
-
         }
+
+        public DbSet<Astronaut> Astronauts => Set<Astronaut>();
+        public DbSet<CelestialBody> CelestialBodies => Set<CelestialBody>();
+        public DbSet<Launchpad> Launchpads => Set<Launchpad>();
+        public DbSet<Manager> Managers => Set<Manager>();
+        public DbSet<Mission> Missions => Set<Mission>();
+        public DbSet<Rocket> Rockets => Set<Rocket>();
+        public DbSet<Scientist> Scientists => Set<Scientist>();
+        public DbSet<MissionAstronautAssignment> MissionAstronautAssignments => Set<MissionAstronautAssignment>();
+        public DbSet<MissionScientistAssignment> MissionScientistAssignments => Set<MissionScientistAssignment>();
     }
 }
