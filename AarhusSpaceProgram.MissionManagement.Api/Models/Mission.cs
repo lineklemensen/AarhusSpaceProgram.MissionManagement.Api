@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Models
 {
@@ -18,6 +19,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
 
         public int? DurationHours { get; set; }
 
+        [Required]
+        public MissionStatus Status { get; set; }
 
+        public MissionType Type { get; set; }
     }
 }

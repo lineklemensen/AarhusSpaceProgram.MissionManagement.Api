@@ -13,6 +13,16 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Mission>(entity =>
+            {
+                entity.Property(m => m.Status).HasConversion<string>();
+                entity.Property(m => m.Type).HasConversion<string>();
+            });
+
+            modelBuilder.Entity<Astronaut>()
+                .Property(a => a.Rank)
+                .HasConversion<string>();
         }
     }
 }

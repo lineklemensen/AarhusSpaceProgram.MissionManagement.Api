@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Models
@@ -15,8 +16,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public string Name { get; set; } = null!;
 
         [Required]
-        [MaxLength(100)]
-        public string Rank { get; set; } = null!;
+        public AstronautRank Rank { get; set; }
 
         [Required]
         [MaxLength(20)]
