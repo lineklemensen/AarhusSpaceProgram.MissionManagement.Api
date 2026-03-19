@@ -27,6 +27,17 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             modelBuilder.Entity<Launchpad>()
                 .Property(l => l.Status)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<CelestialBody>(entity =>
+            {
+                entity.Property(cb => cb.BodyType).HasConversion<string>();
+                entity.Property(cb => cb.PlanetClass).HasConversion<string>();
+
+                entity.HasOne(cb => cb.Parent)
+                    .WithMany(cb => cb.Children)
+                    .HasForeignKey(cb => cb.ParentId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }
