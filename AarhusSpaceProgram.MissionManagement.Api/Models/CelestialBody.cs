@@ -21,7 +21,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public PlanetClass? PlanetClass { get; set; }
 
         [Required]
-        public double DistanceValueAU { get; set; }
+        public double DistanceValueToParentAU { get; set; }
 
         public int? ParentId { get; set; }
 

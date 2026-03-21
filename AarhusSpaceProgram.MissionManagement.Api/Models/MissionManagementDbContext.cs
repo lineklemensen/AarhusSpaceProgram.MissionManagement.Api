@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Models
 {
@@ -17,9 +18,41 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             // Primary entities
 
             // Astronaut
-            modelBuilder.Entity<Astronaut>()
-                .Property(a => a.Rank)
-                .HasConversion<string>();
+            modelBuilder.Entity<Astronaut>(entity =>
+            {
+                entity.Property(a => a.Rank).HasConversion<string>();
+
+                entity.HasData(
+                    new Astronaut
+                    {
+                        Id = 1,
+                        Name = "Neil Legstrong",
+                        Rank = AstronautRank.Astronaut,
+                        Paygrade = "2-A",
+                        HoursInSimulation = 500,
+                        HoursInSpace = 100
+                    },
+                    new Astronaut
+                    {
+                        Id = 2,
+                        Name = "Buzz Lightyear",
+                        Rank = AstronautRank.Pilot,
+                        Paygrade = "3-A",
+                        HoursInSimulation = 600,
+                        HoursInSpace = 150
+                    },
+                    new Astronaut
+                    {
+                        Id = 3,
+                        Name = "Sally Ride",
+                        Rank = AstronautRank.MissionSpecialist,
+                        Paygrade = "3-A",
+                        HoursInSimulation = 700,
+                        HoursInSpace = 200
+                    }
+                );
+
+            });
 
             // CelestialBody
             modelBuilder.Entity<CelestialBody>(entity =>
@@ -32,6 +65,33 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     .WithMany(cb => cb.Children)
                     .HasForeignKey(cb => cb.ParentId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasData(
+                    new CelestialBody
+                    {
+                        Id = 1,
+                        Name = "Earth",
+                        BodyType = CelestialBodyType.Planet,
+                        PlanetClass = PlanetClass.Rocky,
+                        DistanceValueToParentAU = 1.0
+                    },
+                    new CelestialBody
+                    {
+                        Id = 2,
+                        Name = "Moon",
+                        BodyType = CelestialBodyType.Moon,
+                        DistanceValueToParentAU = 0.00257,
+                        ParentId = 1
+                    },
+                    new CelestialBody
+                    {
+                        Id = 3,
+                        Name = "Mars",
+                        BodyType = CelestialBodyType.Planet,
+                        PlanetClass = PlanetClass.Rocky,
+                        DistanceValueToParentAU = 1.524
+                    }
+                );
             });
 
             // Launchpad
