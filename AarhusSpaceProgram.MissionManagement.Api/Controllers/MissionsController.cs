@@ -1,6 +1,7 @@
-using AarhusSpaceProgram.MissionManagement.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AarhusSpaceProgram.MissionManagement.Api.DTO;
+using AarhusSpaceProgram.MissionManagement.Api.Models;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -8,21 +9,42 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
     [ApiController]
     public class MissionsController : ControllerBase
     {
-        [HttpGet("ping")]
-        public IActionResult Ping()
+        private readonly MissionManagementDbContext _context;
+
+        private readonly ILogger<MissionsController> _logger;
+
+        public MissionsController(
+            MissionManagementDbContext context, 
+            ILogger<MissionsController> logger)
         {
-            return Ok(new
-            {
-                message = "MissionsController is running",
-                timestampUtc = DateTime.UtcNow
-            });
+            _context = context;
+            _logger = logger;
         }
 
-        // TEST endpoint: kaster en exception for at trigge Developer Exception Page
-        [HttpGet("boom")]
-        public IActionResult Boom()
+        [HttpGet(Name = "GetMissions")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        public async Task<RestDTO<MissionListDTO[]>> Get()
         {
-            throw new InvalidOperationException("DEV TEST: MissionsController /missions/boom threw an exception.");
+            var query = _context.Missions
+                .AsNoTracking()
+                .Select(m => new MissionListDTO
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Status = m.Status.ToString()
+                });
+
+            return new RestDTO<MissionListDTO[]>
+            {
+                Data = await query.ToArrayAsync(),
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(null, "Missions", null, Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            };
         }
     }
 }
