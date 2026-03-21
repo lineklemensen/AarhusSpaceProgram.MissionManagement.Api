@@ -7,11 +7,52 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class RocketsController : Controller
+    public class RocketsController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly MissionManagementDbContext _context;
+
+        private readonly ILogger<RocketsController> _logger;
+
+        public RocketsController(
+            MissionManagementDbContext context,
+            ILogger<RocketsController> logger)
         {
-            return View();
+            _context = context;
+            _logger = logger;
+        }
+
+        [HttpGet(Name = "GetRockets")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        public async Task<RestDTO<RocketListItemDTO[]>> Get()
+        {
+            var query = _context.Rockets
+                .AsNoTracking()
+                .Select(r => new RocketListItemDTO
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    PayloadCapacityKg = r.PayloadCapacityKg,
+                    CrewCapacity = r.CrewCapacity,
+                    NumberOfStages = r.NumberOfStages,
+                    FuelCapacityKg = r.FuelCapacityKg,
+                    WeightKg = r.WeightKg
+                });
+
+            return new RestDTO<RocketListItemDTO[]>
+            {
+                Data = await query.ToArrayAsync(),
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            null,
+                            "Rockets",
+                            null,
+                            Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            };
         }
     }
 }

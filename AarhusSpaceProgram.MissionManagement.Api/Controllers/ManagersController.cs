@@ -32,6 +32,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                     Id = m.Id,
                     Name = m.Name
                 });
+
             return new RestDTO<ManagerListItemDTO[]>
             {
                 Data = await query.ToArrayAsync(),
