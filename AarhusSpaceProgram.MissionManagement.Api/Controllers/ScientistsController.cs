@@ -1,49 +1,51 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
+
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class MissionsController : ControllerBase
+    public class ScientistsController : ControllerBase
     {
         private readonly MissionManagementDbContext _context;
 
-        private readonly ILogger<MissionsController> _logger;
+        private readonly ILogger<ScientistsController> _logger;
 
-        public MissionsController(
-            MissionManagementDbContext context, 
-            ILogger<MissionsController> logger)
+        public ScientistsController(
+            MissionManagementDbContext context,
+            ILogger<ScientistsController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetMissions")]
+        [HttpGet(Name = "GetScientists")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<RestDTO<MissionListItemDTO[]>> Get()
+        public async Task<RestDTO<ScientistListItemDTO[]>> Get()
         {
-            var query = _context.Missions
+            var query = _context.Scientists
                 .AsNoTracking()
-                .Select(m => new MissionListItemDTO
+                .Select(s => new ScientistListItemDTO
                 {
-                    Id = m.Id,
-                    Name = m.Name,
-                    Status = m.Status.ToString()
+                    Id = s.Id,
+                    Name = s.Name,
+                    Title = s.Title,
+                    Specialty = s.Specialty,
+                    HireDate = s.HireDate
                 });
-
-            return new RestDTO<MissionListItemDTO[]>
+            return new RestDTO<ScientistListItemDTO[]>
             {
                 Data = await query.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
                         Url.Action(
-                            null, 
-                            "Missions", 
-                            null, 
+                            null,
+                            "Scientists",
+                            null,
                             Request.Scheme)!,
                         "self",
                         "GET"),

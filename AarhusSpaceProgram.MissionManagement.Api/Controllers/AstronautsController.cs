@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
@@ -7,43 +7,46 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class MissionsController : ControllerBase
+    public class AstronautsController : ControllerBase
     {
         private readonly MissionManagementDbContext _context;
 
-        private readonly ILogger<MissionsController> _logger;
+        private readonly ILogger<AstronautsController> _logger;
 
-        public MissionsController(
+        public AstronautsController(
             MissionManagementDbContext context, 
-            ILogger<MissionsController> logger)
+            ILogger<AstronautsController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetMissions")]
+        [HttpGet(Name = "GetAstronauts")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<RestDTO<MissionListItemDTO[]>> Get()
+        public async Task<RestDTO<AstronautListItemDTO[]>> Get()
         {
-            var query = _context.Missions
+            var query = _context.Astronauts
                 .AsNoTracking()
-                .Select(m => new MissionListItemDTO
+                .Select(a => new AstronautListItemDTO
                 {
-                    Id = m.Id,
-                    Name = m.Name,
-                    Status = m.Status.ToString()
+                    Id = a.Id,
+                    Name = a.Name,
+                    Rank = a.Rank.ToString(),
+                    Paygrade = a.Paygrade,
+                    HoursInSimulation = a.HoursInSimulation,
+                    HoursInSpace = a.HoursInSpace
                 });
 
-            return new RestDTO<MissionListItemDTO[]>
+            return new RestDTO<AstronautListItemDTO[]>
             {
                 Data = await query.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
                         Url.Action(
-                            null, 
-                            "Missions", 
-                            null, 
+                            null,
+                            "Astronauts",
+                            null,
                             Request.Scheme)!,
                         "self",
                         "GET"),

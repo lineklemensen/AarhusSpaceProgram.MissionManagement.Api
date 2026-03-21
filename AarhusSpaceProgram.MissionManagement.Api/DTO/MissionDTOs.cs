@@ -1,6 +1,6 @@
 ﻿namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
-    public sealed record MissionListDTO
+    public sealed record MissionListItemDTO
     {
         public int Id { get; init; }
 
