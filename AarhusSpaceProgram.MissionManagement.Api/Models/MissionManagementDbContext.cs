@@ -95,9 +95,30 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             });
 
             // Launchpad
-            modelBuilder.Entity<Launchpad>()
-                .Property(l => l.Status)
-                .HasConversion<string>();
+            modelBuilder.Entity<Launchpad>(entity =>
+            {
+                entity.HasIndex(l => l.PadCode).IsUnique();
+                entity.Property(l => l.Status).HasConversion<string>();
+
+                entity.HasData(
+                    new Launchpad
+                    {
+                        Id = 1,
+                        PadCode = "LC-39A",
+                        Location = "Kennedy Space Center, Florida, USA",
+                        Status = LaunchpadStatus.Operational,
+                        MaxSupportedWeightKg = 63800
+                    },
+                    new Launchpad
+                    {
+                        Id= 2,
+                        PadCode = "SLC-40",
+                        Location = "Cape Canaveral Space Force Station, Florida, USA",
+                        Status = LaunchpadStatus.UnderMaintenance,
+                        MaxSupportedWeightKg = 22800
+                    }
+                );
+            });
 
             //Mission
             modelBuilder.Entity<Mission>(entity =>

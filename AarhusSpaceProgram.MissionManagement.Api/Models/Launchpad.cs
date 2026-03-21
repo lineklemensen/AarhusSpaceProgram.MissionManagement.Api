@@ -12,6 +12,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(20)]
+        public string PadCode { get; set; } = null!;
+
+        [Required]
         [MaxLength(200)]
         public string Location { get; set; } = null!;
 
@@ -19,7 +23,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public LaunchpadStatus Status { get; set; }
 
         [Required]
-        public int MaxSupportedWeight { get; set; }
+        public int MaxSupportedWeightKg { get; set; }
 
     }
 }
