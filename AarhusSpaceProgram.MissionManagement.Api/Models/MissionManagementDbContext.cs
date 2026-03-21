@@ -112,10 +112,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     new Launchpad
                     {
                         Id= 2,
-                        PadCode = "SLC-40",
+                        PadCode = "SLC-41",
                         Location = "Cape Canaveral Space Force Station, Florida, USA",
                         Status = LaunchpadStatus.UnderMaintenance,
-                        MaxSupportedWeightKg = 22800
+                        MaxSupportedWeightKg = 17440
                     }
                 );
             });
@@ -125,6 +125,27 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             {
                 entity.Property(m => m.Status).HasConversion<string>();
                 entity.Property(m => m.Type).HasConversion<string>();
+
+                entity.HasData(
+                    new Mission
+                    {
+                        Id = 1,
+                        Name = "Mars 2020",
+                        LaunchDate = new DateOnly(2020, 7, 30),
+                        DurationHours = 4872,
+                        Status = MissionStatus.Completed,
+                        Type = MissionType.Landing
+                    },
+                    new Mission
+                    {
+                        Id = 2,
+                        Name = "Artemis I",
+                        LaunchDate = new DateOnly(2022, 11, 16),
+                        DurationHours = 613,
+                        Status = MissionStatus.Completed,
+                        Type = MissionType.Orbit
+                    }
+                );
             });
 
             // Junction entities
