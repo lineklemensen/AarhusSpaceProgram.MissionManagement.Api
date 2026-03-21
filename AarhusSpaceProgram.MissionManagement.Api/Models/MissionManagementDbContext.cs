@@ -216,8 +216,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             });
 
             // Junction entities
-
-            // Composite keys
             // MissionAstronautAssignment
             modelBuilder.Entity<MissionAstronautAssignment>(entity =>
             {
@@ -230,6 +228,24 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                 entity.HasOne(ma => ma.Astronaut)
                     .WithMany(a => a.MissionAssignments)
                     .HasForeignKey(ma => ma.AstronautId);
+
+                entity.HasData(
+                    new MissionAstronautAssignment
+                    {
+                        MissionId = 1,
+                        AstronautId = 1
+                    },
+                    new MissionAstronautAssignment
+                    {
+                        MissionId = 1,
+                        AstronautId = 2
+                    },
+                    new MissionAstronautAssignment
+                    {
+                        MissionId = 2,
+                        AstronautId = 3
+                    }
+                );
             });
 
             // MissionScientistAssignment
@@ -246,6 +262,19 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     .WithMany(s => s.MissionAssignments)
                     .HasForeignKey(ms => ms.ScientistId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasData(
+                    new MissionScientistAssignment
+                    {
+                        MissionId = 1,
+                        ScientistId = 1
+                    },
+                    new MissionScientistAssignment
+                    {
+                        MissionId = 2,
+                        ScientistId = 2
+                    }
+                );
             });
         }
 
