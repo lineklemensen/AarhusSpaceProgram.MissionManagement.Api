@@ -120,6 +120,23 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                 );
             });
 
+            // Manager
+            modelBuilder.Entity<Manager>(entity =>
+            {
+                entity.HasData(
+                    new Manager
+                    {
+                        Id = 1,
+                        Name = "Dean Kranz"
+                    },
+                    new Manager
+                    {
+                        Id = 2,
+                        Name = "Ellen Ripley"
+                    }
+                );
+            });
+
             //Mission
             modelBuilder.Entity<Mission>(entity =>
             {
@@ -144,6 +161,56 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                         DurationHours = 613,
                         Status = MissionStatus.Completed,
                         Type = MissionType.Orbit
+                    }
+                );
+            });
+
+            // Rocket
+            modelBuilder.Entity<Rocket>(entity =>
+            {
+                entity.HasData(
+                    new Rocket
+                    {
+                        Id = 1,
+                        Name = "Atlas V 541",
+                        PayloadCapacityKg = 17440,
+                        CrewCapacity = 0,
+                        NumberOfStages = 2,
+                        FuelCapacityKg = 284000,
+                        WeightKg = 49000
+                    },
+                    new Rocket
+                    {
+                        Id = 2,
+                        Name = "Space Launch System Block 1",
+                        PayloadCapacityKg = 95000,
+                        CrewCapacity = 4,
+                        NumberOfStages = 2,
+                        FuelCapacityKg = 2500000,
+                        WeightKg = 130000
+                    }
+                );
+            });
+
+            // Scientist
+            modelBuilder.Entity<Scientist>(entity =>
+            {
+                entity.HasData(
+                    new Scientist
+                    {
+                        Id = 1,
+                        Name = "Howard Wolowitz",
+                        Title = "Aerospace Engineer",
+                        Specialty = "Rocket Propulsion",
+                        HireDate = new DateTime(2010, 5, 1)
+                    },
+                    new Scientist
+                    {
+                        Id = 2,
+                        Name = "Werner von Schwartz",
+                        Title = "Astrophysicist",
+                        Specialty = "Planetary Science",
+                        HireDate = new DateTime(2012, 8, 15)
                     }
                 );
             });
