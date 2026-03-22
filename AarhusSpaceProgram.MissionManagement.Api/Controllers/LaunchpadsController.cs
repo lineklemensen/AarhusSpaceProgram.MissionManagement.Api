@@ -149,5 +149,22 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             });
         }
+
+        [HttpDelete("{id:int}", Name = "DeleteLaunchpad")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var launchpad = await _context.Launchpads
+                .Where(lp => lp.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (launchpad == null)
+                return NotFound();
+
+            _context.Launchpads.Remove(launchpad);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

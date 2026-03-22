@@ -154,7 +154,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 HoursInSimulation = astronaut.HoursInSimulation,
                 HoursInSpace = astronaut.HoursInSpace
             };
-            
+
             return Ok(new RestDTO<AstronautListItemDTO>
             {
                 Data = result,
@@ -170,6 +170,23 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                         "GET"),
                 }
             });
+        }
+
+        [HttpDelete("{id:int}", Name = "DeleteAstronaut")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var astronaut = await _context.Astronauts
+                .Where(a => a.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (astronaut == null)
+                return NotFound();
+
+            _context.Astronauts.Remove(astronaut);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

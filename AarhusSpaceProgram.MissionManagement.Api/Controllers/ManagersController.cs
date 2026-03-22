@@ -121,5 +121,22 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             });
         }
+
+        [HttpDelete("{id:int}", Name = "DeleteManager")]
+        [ResponseCache(NoStore = true)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var manager = await _context.Managers
+                .Where(m => m.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (manager == null)
+                return NotFound();
+
+            _context.Managers.Remove(manager);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
