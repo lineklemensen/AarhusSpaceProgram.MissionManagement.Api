@@ -83,9 +83,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             });
         }
-    
-        //[HttpPost(Name = "CreateManager")]
-        //public async Task<ActionResult<RestDTO<ManagerListItemDTO>>>
 
         [HttpPut("{id:int}", Name = "UpdateManager")]
         [ResponseCache(NoStore = true)]
