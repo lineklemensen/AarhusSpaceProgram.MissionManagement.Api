@@ -54,4 +54,24 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         
         public string? Type { get; set; }
     }
+
+    public sealed class AstronautAssignmentItemDTO
+    {
+        [Required]
+        public int AstronautId { get; set; }
+    }
+
+    public sealed class AssignAstronautsToMissionDTO
+    {
+        [Required]
+        [MinLength(1)]
+        public List<AstronautAssignmentItemDTO> Astronauts { get; set; } = new();
+    }
+
+    public sealed class RemoveAstronautsFromMissionDTO
+    {
+        [Required]
+        [MinLength(1)]
+        public List<AstronautAssignmentItemDTO> Astronauts { get; set; } = new();
+    }
 }
