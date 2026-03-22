@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
+using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -19,6 +20,70 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         {
             _context = context;
             _logger = logger;
+        }
+
+        [HttpPost(Name = "CreateAstronaut")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> Post(CreateAstronautDTO dto)
+        { 
+            if (!Enum.IsDefined(typeof(AstronautRank), dto.Rank))
+            {
+                return BadRequest($"Invalid rank: {dto.Rank}");
+            }
+
+            var astronaut = new Astronaut
+            {
+                Name = dto.Name,
+                Rank = dto.Rank,
+                Paygrade = dto.Paygrade,
+                HoursInSimulation = dto.HoursInSimulation,
+                HoursInSpace = dto.HoursInSpace
+            };
+
+            _context.Astronauts.Add(astronaut);
+            await _context.SaveChangesAsync();
+
+            var result = new AstronautListItemDTO
+            {
+                Id = astronaut.Id,
+                Name = astronaut.Name,
+                Rank = astronaut.Rank.ToString(),
+                Paygrade = astronaut.Paygrade,
+                HoursInSimulation = astronaut.HoursInSimulation,
+                HoursInSpace = astronaut.HoursInSpace
+            };
+
+            return Created(
+                Url.Action(
+                    action: nameof(GetById),
+                    controller: "Astronauts",
+                    values: new { id = astronaut.Id },
+                    protocol: Request.Scheme)!,
+
+                new RestDTO<AstronautListItemDTO>
+                {
+                    Data = result,
+                    Links = new List<LinkDTO>
+                    {
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(GetById),
+                                controller: "Astronauts",
+                                values: new { id = astronaut.Id },
+                                protocol: Request.Scheme)!,
+                            "self",
+                            "GET"),
+
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(Get),
+                                controller: "Astronauts",
+                                values: null,
+                                protocol: Request.Scheme)!,
+                            "update",
+                            "GET"),
+                    }
+                });
         }
 
         [HttpGet(Name = "GetAstronauts")]
