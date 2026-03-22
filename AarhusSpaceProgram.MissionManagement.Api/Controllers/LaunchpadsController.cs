@@ -23,6 +23,67 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        // CREATE
+        [HttpPost(Name = "CreateLaunchpad")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> Post(CreateLaunchpadDTO dto)
+        {
+            if (!Enum.TryParse<LaunchpadStatus>(dto.Status, ignoreCase: true, out var status))
+                return BadRequest($"Invalid status value: {dto.Status}");
+
+            var launchpad = new Launchpad
+            {
+                PadCode = dto.PadCode,
+                Location = dto.Location,
+                Status = status,
+                MaxSupportedWeightKg = dto.MaxSupportedWeightKg
+            };
+
+            _context.Launchpads.Add(launchpad);
+            await _context.SaveChangesAsync();
+
+            var result = new LaunchpadListItemDTO
+            {
+                Id = launchpad.Id,
+                PadCode = launchpad.PadCode,
+                Location = launchpad.Location,
+                Status = launchpad.Status.ToString(),
+                MaxSupportedWeightKg = launchpad.MaxSupportedWeightKg
+            };
+
+            return Created(
+                Url.Action(
+                    action: nameof(GetById),
+                    controller: "Launchpads",
+                    values: new { id = launchpad.Id },
+                    protocol: Request.Scheme)!,
+
+                new RestDTO<LaunchpadListItemDTO>
+                {
+                    Data = result,
+                    Links = new List<LinkDTO>
+                    {
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(GetById),
+                                controller: "Launchpads",
+                                values: new { id = launchpad.Id },
+                                protocol: Request.Scheme)!,
+                            "self",
+                            "GET"),
+
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(Get),
+                                controller: "Launchpads",
+                                values: null,
+                                protocol: Request.Scheme)!,
+                            "collection",
+                            "GET"),
+                    }
+                });
+        }
+
         [HttpGet(Name = "GetLaunchpads")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<LaunchpadListItemDTO[]>> Get()

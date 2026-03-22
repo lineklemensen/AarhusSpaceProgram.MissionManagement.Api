@@ -21,6 +21,68 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        // CREATE
+        [HttpPost(Name = "CreateRocket")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<RocketListItemDTO>>> Post(CreateRocketDTO dto)
+        {
+            var rocket = new Rocket
+            {
+                Name = dto.Name,
+                PayloadCapacityKg = dto.PayloadCapacityKg,
+                CrewCapacity = dto.CrewCapacity,
+                NumberOfStages = dto.NumberOfStages,
+                FuelCapacityKg = dto.FuelCapacityKg,
+                WeightKg = dto.WeightKg
+            };
+
+            _context.Rockets.Add(rocket);
+            await _context.SaveChangesAsync();
+
+            var result = new RocketListItemDTO
+            {
+                Id = rocket.Id,
+                Name = rocket.Name,
+                PayloadCapacityKg = rocket.PayloadCapacityKg,
+                CrewCapacity = rocket.CrewCapacity,
+                NumberOfStages = rocket.NumberOfStages,
+                FuelCapacityKg = rocket.FuelCapacityKg,
+                WeightKg = rocket.WeightKg
+            };
+
+            return Created(
+                Url.Action(
+                    action: nameof(GetById),
+                    controller: "Rockets",
+                    values: new { id = rocket.Id },
+                    protocol: Request.Scheme)!,
+
+                new RestDTO<RocketListItemDTO>
+                {
+                    Data = result,
+                    Links = new List<LinkDTO>
+                    {
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(GetById),
+                                controller:"Rockets",
+                                values: new { id = rocket.Id },
+                                protocol: Request.Scheme)!,
+                            "self",
+                            "GET"),
+
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(Get),
+                                controller:"Rockets",
+                                values: null,
+                                protocol: Request.Scheme)!,
+                            "collection",
+                            "GET")
+                    }
+                });
+        }
+
         [HttpGet(Name = "GetRockets")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<RocketListItemDTO[]>> Get()

@@ -1,5 +1,29 @@
-﻿namespace AarhusSpaceProgram.MissionManagement.Api.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
+    public sealed class CreateRocketDTO
+    {
+        [Required]
+        [StringLength(200, MinimumLength = 1)]
+        public string Name { get; set; } = null!;
+
+        [Required]
+        public int PayloadCapacityKg { get; set; }
+
+        [Required]
+        public int CrewCapacity { get; set; }
+
+        [Required]
+        public int NumberOfStages { get; set; }
+
+        [Required]
+        public int FuelCapacityKg { get; set; }
+
+        [Required]
+        public int WeightKg { get; set; }
+    }
+
     public sealed record RocketListItemDTO
     {
         public int Id { get; set; }

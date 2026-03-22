@@ -22,19 +22,18 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        // CREATE
         [HttpPost(Name = "CreateAstronaut")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> Post(CreateAstronautDTO dto)
-        { 
-            if (!Enum.IsDefined(typeof(AstronautRank), dto.Rank))
-            {
+        {
+            if (!Enum.TryParse<AstronautRank>(dto.Rank, out var rank))
                 return BadRequest($"Invalid rank: {dto.Rank}");
-            }
 
             var astronaut = new Astronaut
             {
                 Name = dto.Name,
-                Rank = dto.Rank,
+                Rank = rank,
                 Paygrade = dto.Paygrade,
                 HoursInSimulation = dto.HoursInSimulation,
                 HoursInSpace = dto.HoursInSpace
@@ -80,17 +79,18 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                                 controller: "Astronauts",
                                 values: null,
                                 protocol: Request.Scheme)!,
-                            "update",
+                            "collection",
                             "GET"),
                     }
                 });
         }
 
+        // READ
         [HttpGet(Name = "GetAstronauts")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<AstronautListItemDTO[]>> Get()
         {
-            var query = _context.Astronauts
+            var astronaut = _context.Astronauts
                 .AsNoTracking()
                 .Select(a => new AstronautListItemDTO
                 {
@@ -104,7 +104,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
             return new RestDTO<AstronautListItemDTO[]>
             {
-                Data = await query.ToArrayAsync(),
+                Data = await astronaut.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
@@ -157,6 +157,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateAstronaut")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateAstronautDTO dto)
@@ -237,6 +238,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // DELETE
         [HttpDelete("{id:int}", Name = "DeleteAstronaut")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)
