@@ -49,5 +49,80 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             };
         }
+
+        [HttpGet("{id:int}", Name = "GetManagerById")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> GetById(int id)
+        {
+            var manager = await _context.Managers
+                .AsNoTracking()
+                .Where(m => m.Id == id)
+                .Select(m => new ManagerListItemDTO
+                {
+                    Id = m.Id,
+                    Name = m.Name
+                })
+                .FirstOrDefaultAsync();
+
+            if (manager == null)
+                return NotFound();
+
+            return Ok(new RestDTO<ManagerListItemDTO>
+            {
+                Data = manager,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetById),
+                            controller: "Managers",
+                            values: new { id },
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            });
+        }
+    
+        //[HttpPost(Name = "CreateManager")]
+        //public async Task<ActionResult<RestDTO<ManagerListItemDTO>>>
+
+        [HttpPut("{id:int}", Name = "UpdateManager")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(int id, ManagerUpdateDTO dto)
+        {
+            var manager = await _context.Managers
+                .Where(m => m.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (manager == null)
+                return NotFound();
+
+            manager.Name = dto.Name;
+
+            await _context.SaveChangesAsync();
+
+            var result = new ManagerListItemDTO
+            {
+                Id = manager.Id,
+                Name = manager.Name
+            };
+
+            return Ok(new RestDTO<ManagerListItemDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetById),
+                            controller: "Managers",
+                            values: new { id },
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET")
+                }
+            });
+        }
     }
 }
