@@ -1,7 +1,11 @@
-﻿namespace AarhusSpaceProgram.MissionManagement.Api.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
     public sealed class CreateManagerDTO
     {
+        [Required]
+        [StringLength(200, MinimumLength = 1)]
         public string Name { get; set; } = null!;
     }
 

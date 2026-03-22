@@ -21,6 +21,19 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        [HttpPost(Name = "CreateManager")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Post(CreateManagerDTO dto)
+        {
+            var manager = new Manager
+            {
+                Name = dto.Name
+            };
+
+            _context.Managers.Add(manager);
+            await _context.SaveChangesAsync();
+        }
+
         [HttpGet(Name = "GetManagers")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<ManagerListItemDTO[]>> Get()
