@@ -1,5 +1,23 @@
-﻿namespace AarhusSpaceProgram.MissionManagement.Api.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
+    public sealed class CreateMissionDTO
+    {
+        [Required]
+        [StringLength(200, MinimumLength = 1)]
+        public string Name { get; set; } = null!;
+
+        public DateOnly? LaunchDate { get; set; }
+
+        public int? DurationHours { get; set; }
+
+        [Required]
+        public string Status { get; set; } = null!;
+
+        public string Type { get; set; } = null!;
+    }
+
     public sealed record MissionSimpleListItemDTO
     {
         public int Id { get; init; }

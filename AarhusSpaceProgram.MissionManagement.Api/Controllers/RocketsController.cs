@@ -83,11 +83,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 });
         }
 
+        // READ
         [HttpGet(Name = "GetRockets")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<RocketListItemDTO[]>> Get()
         {
-            var query = _context.Rockets
+            var rocket = _context.Rockets
                 .AsNoTracking()
                 .Select(r => new RocketListItemDTO
                 {
@@ -102,7 +103,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
             return new RestDTO<RocketListItemDTO[]>
             {
-                Data = await query.ToArrayAsync(),
+                Data = await rocket.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
@@ -156,6 +157,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateRocket")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateRocketDTO dto)
@@ -235,6 +237,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // DELETE
         [HttpDelete("{id:int}", Name = "DeleteRocket")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)

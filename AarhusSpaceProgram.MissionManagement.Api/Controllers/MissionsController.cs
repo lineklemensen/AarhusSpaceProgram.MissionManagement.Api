@@ -22,11 +22,78 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        // CREATE
+        [HttpPost(Name = "CreateMission")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Post(CreateMissionDTO dto)
+        {
+            if (!Enum.TryParse<MissionStatus>(dto.Status, out var status))
+                return BadRequest($"Invalid status value: {dto.Status}");
+
+            if (!Enum.TryParse<MissionType>(dto.Type, out var type))
+                return BadRequest($"Invalid type value: {dto.Type}");
+
+            var mission = new Mission
+            {
+                Name = dto.Name,
+                LaunchDate = dto.LaunchDate,
+                DurationHours = dto.DurationHours,
+                Status = status,
+                Type = type
+            };
+
+            _context.Missions.Add(mission);
+            await _context.SaveChangesAsync();
+
+            var result = new MissionListItemDTO
+            {
+                Id = mission.Id,
+                Name = mission.Name,
+                LaunchDate = mission.LaunchDate,
+                DurationHours = mission.DurationHours,
+                Status = mission.Status.ToString(),
+                Type = mission.Type.ToString()
+            };
+
+            return Created(
+                Url.Action(
+                    action: nameof(GetById),
+                    controller: "Missions",
+                    values: new { id = mission.Id },
+                    protocol: Request.Scheme)!,
+
+                new RestDTO<MissionListItemDTO>
+                {
+                    Data = result,
+                    Links = new List<LinkDTO>
+                    {
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(GetById),
+                                controller: "Missions",
+                                values: new { id = mission.Id },
+                                protocol: Request.Scheme)!,
+                            "self",
+                            "GET"),
+
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(Get),
+                                controller: "Missions",
+                                values: null,
+                                protocol: Request.Scheme)!,
+                            "collection",
+                            "GET")
+                    }
+                });
+        }
+
+        // READ
         [HttpGet(Name = "GetMissions")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<MissionSimpleListItemDTO[]>> Get()
         {
-            var query = _context.Missions
+            var mission = _context.Missions
                 .AsNoTracking()
                 .Select(m => new MissionSimpleListItemDTO
                 {
@@ -37,7 +104,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
             return new RestDTO<MissionSimpleListItemDTO[]>
             {
-                Data = await query.ToArrayAsync(),
+                Data = await mission.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
@@ -87,6 +154,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateMission")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Patch(int id, UpdateMissionDTO dto)
@@ -149,7 +217,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             });
         }
-        
+
+        // DELETE
         [HttpDelete("{id:int}", Name = "DeleteMission")]
         [ResponseCache(NoStore = true)]
         public async Task<IActionResult> Delete(int id)

@@ -84,11 +84,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 });
         }
 
+        // READ
         [HttpGet(Name = "GetLaunchpads")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<LaunchpadListItemDTO[]>> Get()
         {
-            var query = _context.Launchpads
+            var launchpad = _context.Launchpads
                 .AsNoTracking()
                 .Select(l => new LaunchpadListItemDTO
                 {
@@ -100,7 +101,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 });
             return new RestDTO<LaunchpadListItemDTO[]>
             {
-                Data = await query.ToArrayAsync(),
+                Data = await launchpad.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
@@ -152,6 +153,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateLaunchpad")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateLaunchpadDTO dto)
@@ -211,6 +213,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // DELETE
         [HttpDelete("{id:int}", Name = "DeleteLaunchpad")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)
