@@ -89,7 +89,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         [HttpPut("{id:int}", Name = "UpdateManager")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(int id, ManagerUpdateDTO dto)
+        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(int id, UpdateManagerDTO dto)
         {
             var manager = await _context.Managers
                 .Where(m => m.Id == id)

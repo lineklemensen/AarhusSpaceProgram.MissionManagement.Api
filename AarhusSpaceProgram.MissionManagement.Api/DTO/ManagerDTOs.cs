@@ -1,6 +1,6 @@
 ﻿namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
-    public sealed class ManagerCreateDTO
+    public sealed class CreateManagerDTO
     {
         public string Name { get; set; } = null!;
     }
@@ -12,7 +12,7 @@
         public string Name { get; init; } = null!;
     }
 
-    public sealed class ManagerUpdateDTO
+    public sealed class UpdateManagerDTO
     {
         public string Name { get; set; } = null!;
     }

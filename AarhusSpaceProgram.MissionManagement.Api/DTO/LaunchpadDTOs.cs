@@ -12,4 +12,13 @@
 
         public int MaxSupportedWeightKg { get; init; }
     }
+
+    public sealed class UpdateLaunchpadDTO
+    {
+        public string? PadCode { get; init; } = null!;
+        public string? Location { get; init; } = null!;
+        public string? Status { get; init; } = null!;
+        public int? MaxSupportedWeightKg { get; init; }
+    }
+
 }
