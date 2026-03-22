@@ -2,23 +2,23 @@
 {
     public sealed record LaunchpadListItemDTO
     {
-        public int Id { get; init; }
+        public int Id { get; set; }
 
-        public string PadCode { get; init; } = null!;
+        public string PadCode { get; set; } = null!;
 
-        public string Location { get; init; } = null!;
+        public string Location { get; set; } = null!;
 
-        public string Status { get; init; } = null!;
+        public string Status { get; set; } = null!;
 
-        public int MaxSupportedWeightKg { get; init; }
+        public int MaxSupportedWeightKg { get; set; }
     }
 
     public sealed class UpdateLaunchpadDTO
     {
-        public string? PadCode { get; init; } = null!;
-        public string? Location { get; init; } = null!;
-        public string? Status { get; init; } = null!;
-        public int? MaxSupportedWeightKg { get; init; }
+        public string? PadCode { get; set; } = null!;
+        public string? Location { get; set; } = null!;
+        public string? Status { get; set; } = null!;
+        public int? MaxSupportedWeightKg { get; set; }
     }
 
 }
