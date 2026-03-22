@@ -22,11 +22,70 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        // CREATE
+        [HttpPost(Name = "CreateScientist")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> Post(CreateScientistDTO dto)
+        {
+            var scientist = new Scientist
+            {
+                Name = dto.Name,
+                Title = dto.Title,
+                Specialty = dto.Specialty,
+                HireDate = dto.HireDate
+            };
+
+            _context.Scientists.Add(scientist);
+            await _context.SaveChangesAsync();
+
+            var result = new ScientistListItemDTO
+            {
+                Id = scientist.Id,
+                Name = scientist.Name,
+                Title = scientist.Title,
+                Specialty = scientist.Specialty,
+                HireDate = scientist.HireDate
+            };
+
+            return Created(
+                Url.Action(
+                    action: nameof(GetById),
+                    controller: "Scientists",
+                    values: new { id = scientist.Id },
+                    protocol: Request.Scheme)!,
+
+                new RestDTO<ScientistListItemDTO>
+                {
+                    Data = result,
+                    Links = new List<LinkDTO>
+                    {
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(GetById),
+                                controller: "Scientists",
+                                values: new { id = scientist.Id },
+                                protocol: Request.Scheme)!,
+                            "self",
+                            "GET"),
+
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(Get),
+                                controller: "Scientists",
+                                values: null,
+                                protocol: Request.Scheme)!,
+                            "collection",
+                            "GET"),
+                    }
+                });
+        }
+
+        // READ
         [HttpGet(Name = "GetScientists")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<ScientistListItemDTO[]>> Get()
         {
-            var query = _context.Scientists
+            var scientist = _context.Scientists
                 .AsNoTracking()
                 .Select(s => new ScientistListItemDTO
                 {
@@ -36,17 +95,18 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                     Specialty = s.Specialty,
                     HireDate = s.HireDate
                 });
+
             return new RestDTO<ScientistListItemDTO[]>
             {
-                Data = await query.ToArrayAsync(),
+                Data = await scientist.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
                         Url.Action(
-                            null,
-                            "Scientists",
-                            null,
-                            Request.Scheme)!,
+                            action: nameof(Get),
+                            controller: "Scientists",
+                            values: null,
+                            protocol: Request.Scheme)!,
                         "self",
                         "GET"),
                 }
@@ -90,6 +150,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateScientist")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateScientistDTO dto)
@@ -138,6 +199,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // DELETE
         [HttpDelete("{id:int}", Name = "DeleteScientist")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)

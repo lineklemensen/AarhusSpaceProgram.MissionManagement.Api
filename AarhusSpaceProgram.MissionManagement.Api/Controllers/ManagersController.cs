@@ -137,6 +137,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // UPDATE
         [HttpPut("{id:int}", Name = "UpdateManager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(int id, UpdateManagerDTO dto)
@@ -175,6 +176,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // DELETE
         [HttpDelete("{id:int}", Name = "DeleteManager")]
         [ResponseCache(NoStore = true)]
         public async Task<IActionResult> Delete(int id)

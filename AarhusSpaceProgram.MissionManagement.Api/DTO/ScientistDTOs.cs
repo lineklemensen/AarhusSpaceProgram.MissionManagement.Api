@@ -1,5 +1,25 @@
-﻿namespace AarhusSpaceProgram.MissionManagement.Api.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
+    public sealed class CreateScientistDTO
+    {
+        [Required]
+        [StringLength(200, MinimumLength = 1)]
+        public string Name { get; set; } = null!;
+
+        [Required]
+        [StringLength(200, MinimumLength = 1)]
+        public string Title { get; set; } = null!;
+
+        [Required]
+        [StringLength(200, MinimumLength = 1)]
+        public string Specialty { get; set; } = null!;
+
+        [Required]
+        public DateTime HireDate { get; set; }
+    }
+
     public sealed record ScientistListItemDTO
     {
         public int Id { get; init; }
