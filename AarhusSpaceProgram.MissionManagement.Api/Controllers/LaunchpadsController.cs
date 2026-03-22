@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -99,6 +98,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                     Status = l.Status.ToString(),
                     MaxSupportedWeightKg = l.MaxSupportedWeightKg
                 });
+
             return new RestDTO<LaunchpadListItemDTO[]>
             {
                 Data = await launchpad.ToArrayAsync(),
@@ -106,10 +106,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 {
                     new LinkDTO(
                         Url.Action(
-                            null,
-                            "Launchpads",
-                            null,
-                            Request.Scheme)!,
+                            action: nameof(Get),
+                            controller: "Launchpads",
+                            values: null,
+                            protocol: Request.Scheme)!,
                         "self",
                         "GET"),
                 }
@@ -156,7 +156,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateLaunchpad")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult> Patch(int id, UpdateLaunchpadDTO dto)
+        public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> Patch(int id, UpdateLaunchpadDTO dto)
         {
             var launchpad = await _context.Launchpads
                 .Where(lp => lp.Id == id)
