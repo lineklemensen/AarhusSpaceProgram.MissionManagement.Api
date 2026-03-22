@@ -294,6 +294,81 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        [HttpPost("{missionId:int}/scientists", Name = "AssignScientistsToMission")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<object>>> AssignScientists(int missionId, AssignScientistsToMissionDTO dto)
+        {
+            var missionExists = await _context.Missions
+                .Where(m => m.Id == missionId)
+                .AnyAsync();
+
+            if (!missionExists)
+                return NotFound($"Mission with id {missionId} not found.");
+
+            var requestedScientistIds = dto.Scientists
+                .Select(s => s.ScientistId)
+                .Distinct()
+                .ToList();
+
+            if (requestedScientistIds.Count == 0)
+                return BadRequest("No scientist IDs provided.");
+
+            var scientists = await _context.Scientists
+                .Where(s => requestedScientistIds.Contains(s.Id))
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            var missingScientistIds = requestedScientistIds
+                .Except(scientists)
+                .ToList();
+
+            if (missingScientistIds.Count > 0)
+                return BadRequest($"The following scientist IDs do not exist: {string.Join(", ", missingScientistIds)}");
+
+            var alreadyAssignedScientistIds = await _context.MissionScientistAssignments
+                .Where(ms => ms.MissionId == missionId && requestedScientistIds.Contains(ms.ScientistId))
+                .Select(ms => ms.ScientistId)
+                .ToListAsync();
+
+            var scientistIdsToAssign = requestedScientistIds
+                .Except(alreadyAssignedScientistIds)
+                .ToList();
+
+            foreach (var scientistId in scientistIdsToAssign)
+            {
+                _context.MissionScientistAssignments.Add(new MissionScientistAssignment
+                {
+                    MissionId = missionId,
+                    ScientistId = scientistId
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            var response = new
+            {
+                MissionId = missionId,
+                AssignedScientistIds = scientistIdsToAssign,
+                AlreadyAssignedScientistIds = alreadyAssignedScientistIds
+            };
+
+            return Ok(new RestDTO<object>
+            {
+                Data = response,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetById),
+                            controller: "Missions",
+                            values: new { id = missionId },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
         // Removals
         [HttpPost("{missionId:int}/astronauts/remove", Name = "RemoveAstronautsFromMission")]
         [ResponseCache(NoStore = true)]
@@ -348,6 +423,58 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        [HttpPost("{missionId:int}/scietists/remove", Name = "RemoveScientistsFromMission")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<object>>> RemoveScientists(int missionId, RemoveScientistsFromMissionDTO dto)
+        {
+            var missionExists = await _context.Missions
+                .Where(m => m.Id == missionId)
+                .AnyAsync();
+
+            if (!missionExists)
+                return NotFound($"Mission with id {missionId} not found.");
+
+            var requestedScientistIds = dto.Scientists
+                .Select(s => s.ScientistId)
+                .Distinct()
+                .ToList();
+
+            if (requestedScientistIds.Count == 0)
+                return BadRequest("No scientist IDs provided.");
+
+            var relationsToRemove = await _context.MissionScientistAssignments
+                .Where(ms => ms.MissionId == missionId && requestedScientistIds.Contains(ms.ScientistId))
+                .ToListAsync();
+            if (relationsToRemove.Count == 0)
+                return BadRequest("None of the provided scientist IDs are assigned to this mission.");
+
+            _context.MissionScientistAssignments.RemoveRange(relationsToRemove);
+            await _context.SaveChangesAsync();
+
+            var removedScientistIds = relationsToRemove
+                .Select(r => r.ScientistId)
+                .ToList();
+
+            return Ok(new RestDTO<object>
+            {
+                Data = new
+                {
+                    MissionId = missionId,
+                    RemovedScientistIds = removedScientistIds
+                },
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetById),
+                            controller: "Missions",
+                            values: new { id = missionId },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
 
         // DELETE
         [HttpDelete("{id:int}", Name = "DeleteMission")]

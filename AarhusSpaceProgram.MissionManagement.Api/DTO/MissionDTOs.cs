@@ -47,11 +47,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public string? Name { get; set; } = null!;
 
         public DateOnly? LaunchDate { get; set; }
-        
+
         public int? DurationHours { get; set; }
-        
+
         public string? Status { get; set; }
-        
+
         public string? Type { get; set; }
     }
 
@@ -73,5 +73,25 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         [Required]
         [MinLength(1)]
         public List<AstronautAssignmentItemDTO> Astronauts { get; set; } = new();
+    }
+
+    public sealed class ScientistAssignmentItemDTO
+    {
+        [Required]
+        public int ScientistId { get; set; }
+    }
+
+    public sealed class AssignScientistsToMissionDTO
+    {
+        [Required]
+        [MinLength(1)]
+        public List<ScientistAssignmentItemDTO> Scientists { get; set; } = new();
+    }
+
+    public sealed class RemoveScientistsFromMissionDTO
+    {
+        [Required]
+        [MinLength(1)]
+        public List<ScientistAssignmentItemDTO> Scientists { get; set; } = new();
     }
 }
