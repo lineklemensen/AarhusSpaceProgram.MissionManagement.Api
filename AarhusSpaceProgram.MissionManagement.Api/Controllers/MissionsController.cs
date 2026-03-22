@@ -148,5 +148,22 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             });
         }
+        
+        [HttpDelete("{id:int}", Name = "DeleteMission")]
+        [ResponseCache(NoStore = true)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound();
+
+            _context.Missions.Remove(mission);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
