@@ -21,6 +21,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        // CREATE
         [HttpPost(Name = "CreateManager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Post(CreateManagerDTO dto)
@@ -32,13 +33,52 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
             _context.Managers.Add(manager);
             await _context.SaveChangesAsync();
+
+            var result = new ManagerListItemDTO
+            {
+                Id = manager.Id,
+                Name = manager.Name
+            };
+
+            return Created(
+                Url.Action(
+                    action: nameof(GetById),
+                    controller: "Managers",
+                    values: new { id = manager.Id },
+                    protocol: Request.Scheme)!,
+
+                new RestDTO<ManagerListItemDTO>
+                {
+                    Data = result,
+                    Links = new List<LinkDTO>
+                    {
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(GetById),
+                                controller: "Managers",
+                                values: new { id = manager.Id },
+                                protocol: Request.Scheme)!,
+                            "self",
+                            "GET"),
+
+                        new LinkDTO(
+                            Url.Action(
+                                action: nameof(Get),
+                                controller: "Managers",
+                                values: null,
+                                protocol: Request.Scheme)!,
+                            "collection",
+                            "GET"),
+                    }
+                });
         }
 
+        // READ
         [HttpGet(Name = "GetManagers")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<ManagerListItemDTO[]>> Get()
         {
-            var query = _context.Managers
+            var manager = _context.Managers
                 .AsNoTracking()
                 .Select(m => new ManagerListItemDTO
                 {
@@ -48,15 +88,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
             return new RestDTO<ManagerListItemDTO[]>
             {
-                Data = await query.ToArrayAsync(),
+                Data = await manager.ToArrayAsync(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
                         Url.Action(
-                            null,
-                            "Managers",
-                            null,
-                            Request.Scheme)!,
+                            action: nameof(Get),
+                            controller: "Managers",
+                            values: null,
+                            protocol: Request.Scheme)!,
                         "self",
                         "GET"),
                 }
