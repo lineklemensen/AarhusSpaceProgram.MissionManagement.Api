@@ -14,4 +14,13 @@
 
         public int HoursInSpace { get; init; }
     }
+
+    public sealed class UpdateAstronautDTO
+    {
+        public string? Name { get; set; } = null!;
+        public string? Rank { get; set; } = null!;
+        public string? Paygrade { get; set; } = null!;
+        public int? HoursInSimulation { get; set; }
+        public int? HoursInSpace { get; set; }
+    }
 }
