@@ -52,5 +52,90 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             };
         }
+
+        [HttpGet("{id:int}", Name = "GetScientistById")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> GetById(int id)
+        {
+            var scientist = await _context.Scientists
+                .AsNoTracking()
+                .Where(s => s.Id == id)
+                .Select(s => new ScientistListItemDTO
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Title = s.Title,
+                    Specialty = s.Specialty,
+                    HireDate = s.HireDate
+                })
+                .FirstOrDefaultAsync();
+
+            if (scientist == null)
+                return NotFound();
+
+            return Ok(new RestDTO<ScientistListItemDTO>
+            {
+                Data = scientist,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetById),
+                            controller: "Scientists",
+                            values: new { id },
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            });
+        }
+
+        [HttpPatch("{id:int}", Name = "UpdateScientist")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult> Patch(int id, UpdateScientistDTO dto)
+        {
+            var scientist = await _context.Scientists
+                .Where(s => s.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (scientist == null)
+                return NotFound();
+
+            if (dto.Name != null)
+                scientist.Name = dto.Name;
+
+            if (dto.Title != null)
+                scientist.Title = dto.Title;
+
+            if (dto.Specialty != null)
+                scientist.Specialty = dto.Specialty;
+
+            await _context.SaveChangesAsync();
+
+            var result = new ScientistListItemDTO
+            {
+                Id = scientist.Id,
+                Name = scientist.Name,
+                Title = scientist.Title,
+                Specialty = scientist.Specialty,
+                HireDate = scientist.HireDate
+            };
+
+            return Ok(new RestDTO<ScientistListItemDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetById),
+                            controller: "Scientists",
+                            values: new { id },
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            });
+        }
     }
 }

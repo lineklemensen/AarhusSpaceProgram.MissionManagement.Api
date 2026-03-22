@@ -12,4 +12,11 @@
 
         public DateTime HireDate { get; init; }
     }
+
+    public sealed class UpdateScientistDTO
+    {
+        public string? Name { get; set; } = null!;
+        public string? Title { get; set; } = null!;
+        public string? Specialty { get; set; } = null!;
+    }
 }
