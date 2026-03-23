@@ -46,6 +46,16 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
             public List<ScientistAssignmentItemDTO> Scientists { get; set; } = new();
         }
 
+        // Celestial Body
+        public sealed class CelestialBodyAssignmentDTO
+        {
+            [Required]
+            public int MissionId { get; set; }
+
+            [Required]
+            public int? CelestialBodyId { get; set; }
+        }
+
         // Manager
         public sealed class ManagerAssignmentDTO
         {

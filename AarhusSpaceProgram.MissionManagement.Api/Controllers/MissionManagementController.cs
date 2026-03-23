@@ -152,6 +152,89 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // Celestial Body
+        [HttpPut("target", Name = "AssignTarget")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<object>>> AssignTarget(CelestialBodyAssignmentDTO dto)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == dto.MissionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {dto.MissionId} not found.");
+
+            var target = await _context.CelestialBodies
+                .Where(m => m.Id == dto.CelestialBodyId)
+                .FirstOrDefaultAsync();
+
+            if (target == null)
+                return NotFound($"Celestial body with id {dto.CelestialBodyId} not found.");
+
+            mission.CelestialBodyId = dto.CelestialBodyId;
+            await _context.SaveChangesAsync();
+
+            var result = new CelestialBodyAssignmentDTO
+            {
+                MissionId = mission.Id,
+                CelestialBodyId = target.Id
+            };
+
+            return Ok(new RestDTO<CelestialBodyAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
+        [HttpDelete("target", Name = "RemoveTarget")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<CelestialBodyAssignmentDTO>>> RemoveTarget(int missionId)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == missionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {missionId} not found.");
+
+            mission.CelestialBodyId = null;
+
+            await _context.SaveChangesAsync();
+
+            var result = new CelestialBodyAssignmentDTO
+            {
+                MissionId = mission.Id,
+                CelestialBodyId = null
+            };
+
+            return Ok(new RestDTO<CelestialBodyAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
         // Manager
         [HttpPut("manager", Name = "AssignManager")]
         [ResponseCache(NoStore = true)]
