@@ -235,6 +235,89 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // Launchpad
+        [HttpPut("launchpad", Name = "AssignLaunchpad")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<LaunchpadAssignmentDTO>>> AssignLaunchpad(LaunchpadAssignmentDTO dto)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == dto.MissionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {dto.MissionId} not found.");
+
+            var launchpad = await _context.Launchpads
+                .Where(m => m.Id == dto.LaunchpadId)
+                .FirstOrDefaultAsync();
+
+            if (launchpad == null)
+                return NotFound($"Launchpad with id {dto.LaunchpadId} not found.");
+
+            mission.LaunchpadId = dto.LaunchpadId;
+            await _context.SaveChangesAsync();
+
+            var result = new LaunchpadAssignmentDTO
+            {
+                MissionId = mission.Id,
+                LaunchpadId = launchpad.Id
+            };
+
+            return Ok(new RestDTO<LaunchpadAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
+        [HttpDelete("launchpad", Name = "RemoveLaunchpad")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<LaunchpadAssignmentDTO>>> RemoveLaunchpad(int missionId)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == missionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {missionId} not found.");
+
+            mission.LaunchpadId = null;
+
+            await _context.SaveChangesAsync();
+
+            var result = new LaunchpadAssignmentDTO
+            {
+                MissionId = mission.Id,
+                LaunchpadId = null
+            };
+
+            return Ok(new RestDTO<LaunchpadAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
         // Manager
         [HttpPut("manager", Name = "AssignManager")]
         [ResponseCache(NoStore = true)]

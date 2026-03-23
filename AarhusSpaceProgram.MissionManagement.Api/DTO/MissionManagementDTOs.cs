@@ -56,6 +56,16 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
             public int? CelestialBodyId { get; set; }
         }
 
+        // Launchpad
+        public sealed class LaunchpadAssignmentDTO
+        {
+            [Required]
+            public int MissionId { get; set; }
+
+            [Required]
+            public int? LaunchpadId { get; set; }
+        }
+
         // Manager
         public sealed class ManagerAssignmentDTO
         {
