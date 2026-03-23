@@ -26,10 +26,20 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         //Overview
         [HttpGet("overview", Name = "GetMissionOverview")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<ActionResult<RestDTO<List<MissionOverviewDTO>>>> GetOverview()
+        public async Task<ActionResult<RestDTO<List<MissionOverviewDTO>>>> GetOverview([FromQuery] string? target = null)
         {
-            var overview = await _context.Missions
+            var query = _context.Missions
                 .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(target))
+            {
+                var targetLower = target.ToLower();
+                query = query.Where(m =>
+                    m.TargetBody != null && m.TargetBody.Name.ToLower().Contains(targetLower));
+            }
+
+            var overview = await query
                 .OrderBy(m => m.Status)
                 .Select(m => new MissionOverviewDTO
                 {
