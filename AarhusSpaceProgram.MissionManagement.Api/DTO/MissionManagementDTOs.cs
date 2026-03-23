@@ -50,7 +50,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public sealed class ManagerAssignmentDTO
         {
             [Required]
-            public int ManagerId { get; set; }
+            public int MissionId { get; set; }
+
+            [Required]
+            public int? ManagerId { get; set; }
         }
     }
 }

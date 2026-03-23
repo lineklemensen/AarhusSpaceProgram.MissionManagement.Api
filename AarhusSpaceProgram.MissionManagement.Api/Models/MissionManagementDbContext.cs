@@ -146,17 +146,17 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasOne(m => m.Rocket)
-                    .WithMany()
+                    .WithMany(m => m.Missions)
                     .HasForeignKey(m => m.RocketId)
                     .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasOne(m => m.Launchpad)
-                    .WithMany()
+                    .WithMany(m => m.Missions)
                     .HasForeignKey(m => m.LaunchpadId)
                     .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasOne(m => m.TargetBody)
-                    .WithMany()
+                    .WithMany(m => m.TargetedByMissions)
                     .HasForeignKey(m => m.CelestialBodyId)
                     .OnDelete(DeleteBehavior.SetNull);
 

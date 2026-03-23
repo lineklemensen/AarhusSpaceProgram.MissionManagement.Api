@@ -155,7 +155,47 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         // Manager
         [HttpPut("manager", Name = "AssignManager")]
         [ResponseCache(NoStore = true)]
-        public async Ta
+        public async Task<ActionResult<RestDTO<object>>> AssignManager(ManagerAssignmentDTO dto)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == dto.MissionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {dto.MissionId} not found.");
+
+            var manager = await _context.Managers
+                .Where(m => m.Id == dto.ManagerId)
+                .FirstOrDefaultAsync();
+
+            if (manager == null)
+                return NotFound($"Manager with id {dto.ManagerId} not found.");
+
+            mission.ManagerId = dto.ManagerId;
+            await _context.SaveChangesAsync();
+
+            var result = new ManagerAssignmentDTO
+            {
+                MissionId = mission.Id,
+                ManagerId = manager.Id
+            };
+
+            return Ok(new RestDTO<ManagerAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
 
         // Scientists
         [HttpPost("{missionId:int}/scientists", Name = "AssignScientistsToMission")]
