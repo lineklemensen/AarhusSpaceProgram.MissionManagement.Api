@@ -140,6 +140,26 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             //Mission
             modelBuilder.Entity<Mission>(entity =>
             {
+                entity.HasOne(m => m.Manager)
+                    .WithMany(m => m.Missions)
+                    .HasForeignKey(m => m.ManagerId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasOne(m => m.Rocket)
+                    .WithMany()
+                    .HasForeignKey(m => m.RocketId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasOne(m => m.Launchpad)
+                    .WithMany()
+                    .HasForeignKey(m => m.LaunchpadId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasOne(m => m.TargetBody)
+                    .WithMany()
+                    .HasForeignKey(m => m.CelestialBodyId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
                 entity.Property(m => m.Status).HasConversion<string>();
                 entity.Property(m => m.Type).HasConversion<string>();
 
@@ -278,6 +298,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             });
         }
 
+        // DbSets for primary entities
         public DbSet<Astronaut> Astronauts => Set<Astronaut>();
         public DbSet<CelestialBody> CelestialBodies => Set<CelestialBody>();
         public DbSet<Launchpad> Launchpads => Set<Launchpad>();
@@ -285,6 +306,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public DbSet<Mission> Missions => Set<Mission>();
         public DbSet<Rocket> Rockets => Set<Rocket>();
         public DbSet<Scientist> Scientists => Set<Scientist>();
+
+        // DbSets for junction entities
         public DbSet<MissionAstronautAssignment> MissionAstronautAssignments => Set<MissionAstronautAssignment>();
         public DbSet<MissionScientistAssignment> MissionScientistAssignments => Set<MissionScientistAssignment>();
     }

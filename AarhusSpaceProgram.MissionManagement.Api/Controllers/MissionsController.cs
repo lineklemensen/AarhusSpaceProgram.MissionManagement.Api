@@ -189,7 +189,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                         "GET"),
                 }
             });
-
         }
 
         // UPDATE

@@ -4,6 +4,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
     public class MissionManagementDTOs
     {
+        // Astronaut
         public sealed class AstronautAssignmentItemDTO
         {
             [Required]
@@ -24,6 +25,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
             public List<AstronautAssignmentItemDTO> Astronauts { get; set; } = new();
         }
 
+        // Scientist
         public sealed class ScientistAssignmentItemDTO
         {
             [Required]
@@ -42,6 +44,13 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
             [Required]
             [MinLength(1)]
             public List<ScientistAssignmentItemDTO> Scientists { get; set; } = new();
+        }
+
+        // Manager
+        public sealed class ManagerAssignmentDTO
+        {
+            [Required]
+            public int ManagerId { get; set; }
         }
     }
 }

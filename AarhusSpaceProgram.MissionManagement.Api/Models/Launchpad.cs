@@ -25,5 +25,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         [Required]
         public int MaxSupportedWeightKg { get; set; }
 
+        // Navigation properties to missions launched from this launchpad
+        public ICollection<Mission> Missions { get; set; } = new List<Mission>();
     }
 }

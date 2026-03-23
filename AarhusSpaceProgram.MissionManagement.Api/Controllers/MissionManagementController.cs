@@ -89,7 +89,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 {
                     new LinkDTO(
                         Url.Action(
-                            action: nameof(GetById),
+                            action: "GetById",
                             controller: "Missions",
                             values: new { id = missionId },
                             protocol: Request.Scheme)!,
@@ -142,7 +142,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 {
                     new LinkDTO(
                         Url.Action(
-                            action: nameof(GetById),
+                            action: "GetById",
                             controller: "Missions",
                             values: new { id = missionId },
                             protocol: Request.Scheme)!,
@@ -151,6 +151,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 }
             });
         }
+
+        // Manager
+        [HttpPut("manager", Name = "AssignManager")]
+        [ResponseCache(NoStore = true)]
+        public async Ta
 
         // Scientists
         [HttpPost("{missionId:int}/scientists", Name = "AssignScientistsToMission")]
@@ -218,7 +223,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 {
                     new LinkDTO(
                         Url.Action(
-                            action: nameof(GetById),
+                            action: "GetById",
                             controller: "Missions",
                             values: new { id = missionId },
                             protocol: Request.Scheme)!,
@@ -271,7 +276,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 {
                     new LinkDTO(
                         Url.Action(
-                            action: nameof(GetById),
+                            action: "GetById",
                             controller: "Missions",
                             values: new { id = missionId },
                             protocol: Request.Scheme)!,

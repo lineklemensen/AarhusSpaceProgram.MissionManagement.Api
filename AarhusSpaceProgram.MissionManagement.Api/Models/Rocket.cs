@@ -28,5 +28,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
 
         [Required]
         public int WeightKg { get; set; }
+
+        // Navigation properties to missions using this rocket
+        public ICollection<Mission> Missions { get; set; } = new List<Mission>();
     }
 }

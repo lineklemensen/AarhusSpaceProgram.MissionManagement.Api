@@ -13,5 +13,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         [Required]
         [MaxLength(200)]
         public string Name { get; set; } = null!;
+
+        // Navigation properties to missions managed by this manager
+        public ICollection<Mission> Missions { get; set; } = new List<Mission>();
     }
 }

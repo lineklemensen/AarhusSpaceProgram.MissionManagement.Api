@@ -31,7 +31,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         // Navigation to child celestial bodies
         public ICollection<CelestialBody> Children { get; set; } = new List<CelestialBody>();
 
-
-
+        // Navigation to missions targeting this celestial body
+        public ICollection<Mission> TargetedByMissions { get; set; } = new List<Mission>();
     }
 }
