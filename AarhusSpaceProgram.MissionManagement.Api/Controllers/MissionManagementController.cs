@@ -197,6 +197,44 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        [HttpDelete("manager", Name = "RemoveManager")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<ManagerAssignmentDTO>>> RemoveManager(int missionId)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == missionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {missionId} not found.");
+
+            mission.ManagerId = null;
+
+            await _context.SaveChangesAsync();
+
+            var result = new ManagerAssignmentDTO
+            {
+                MissionId = mission.Id,
+                ManagerId = null
+            };
+
+            return Ok(new RestDTO<ManagerAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
         // Scientists
         [HttpPost("{missionId:int}/scientists", Name = "AssignScientistsToMission")]
         [ResponseCache(NoStore = true)]
