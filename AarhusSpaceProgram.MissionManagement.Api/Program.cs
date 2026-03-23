@@ -1,12 +1,18 @@
-using Scalar.AspNetCore;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Host.UseSerilog((context, services, loggerConfiguration) =>
+{
+    loggerConfiguration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services);
+});
 
 builder.Services.AddCors(options => {
     options.AddDefaultPolicy(cfg =>
