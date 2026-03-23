@@ -42,25 +42,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public string Type { get; init; } = null!;
     }
 
-    public sealed record MissionOverviewDTO
-    {
-        public int Id { get; init; }
-
-        public string Name { get; init; } = null!;
-
-        public string ManagerName { get; init; } = null!;
-
-        public string Status { get; init; } = null!;
-
-        public DateOnly? LaunchDate { get; init; }
-
-        public string? RocketModel {  get; init; } = null!;
-
-        public string? LaunchpadLocation { get; init; } = null!;
-
-        public string? TargetCelestialBody { get; init; } = null!;
-    }
-
     public sealed class UpdateMissionDTO
     {
         public string? Name { get; set; } = null!;

@@ -23,6 +23,109 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        //Overview
+        [HttpGet("overview", Name = "GetMissionOverview")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        public async Task<ActionResult<RestDTO<List<MissionOverviewDTO>>>> GetOverview()
+        {
+            var overview = await _context.Missions
+                .AsNoTracking()
+                .OrderBy(m => m.Status)
+                .Select(m => new MissionOverviewDTO
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    ManagerName = m.Manager != null ? $"{m.Manager}" : "Unassigned",
+                    Status = m.Status.ToString(),
+                    LaunchDate = m.LaunchDate,
+                    RocketModel = m.Rocket != null ? m.Rocket.Name : "Unassigned",
+                    LaunchpadLocation = m.Launchpad != null ? m.Launchpad.Location : "Unassigned",
+                    TargetCelestialBody = m.TargetBody != null ? m.TargetBody.Name : "Unassigned"
+                })
+                .ToListAsync();
+
+            return Ok(new RestDTO<List<MissionOverviewDTO>>
+            {
+                Data = overview,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetOverview),
+                            controller: "Missions",
+                            values: null,
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            });
+        }
+
+        // Details
+        [HttpGet("{id:int}/details", Name = "GetMissionDetails")]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+        public async Task<ActionResult<RestDTO<MissionDetailsDTO>>> GetDetails(int id)
+        {
+            var mission = await _context.Missions
+                .AsNoTracking()
+                .Where(m => m.Id == id)
+                .Select(m => new MissionDetailsDTO
+                {
+                    Name = m.Name,
+                    Status = m.Status.ToString(),
+                    LaunchDate = m.LaunchDate,
+                    ManagerName = m.Manager != null ? $"{m.Manager}" : "Unassigned",
+                    RocketModel = m.Rocket != null ? m.Rocket.Name : "Unassigned",
+                    LaunchpadLocation = m.Launchpad != null ? m.Launchpad.Location : "Unassigned",
+                    TargetCelestialBody = m.TargetBody != null ? m.TargetBody.Name : "Unassigned",
+                    Astronauts = m.AstronautAssignments.Select(a => new AstronautListItemDTO
+                    {
+                        Id = a.Astronaut.Id,
+                        Name = a.Astronaut.Name,
+                        Rank = a.Astronaut.Rank.ToString(),
+                        Paygrade = a.Astronaut.Paygrade,
+                        HoursInSimulation = a.Astronaut.HoursInSimulation,
+                        HoursInSpace = a.Astronaut.HoursInSpace
+                    }).ToList(),
+                    Scientists = m.ScientistAssignments.Select(s => new ScientistListItemDTO
+                    {
+                        Id = s.Scientist.Id,
+                        Name = s.Scientist.Name,
+                        Title = s.Scientist.Title,
+                        Specialty = s.Scientist.Specialty,
+                        HireDate = s.Scientist.HireDate
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {id} not found.");
+
+            return Ok(new RestDTO<MissionDetailsDTO>
+            {
+                Data = mission,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetDetails),
+                            controller: "Missions",
+                            values: new { id },
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetOverview),
+                            controller: "Missions",
+                            values: null,
+                            protocol: Request.Scheme)!,
+                        "collection",
+                        "GET")
+                }
+            });
+        }
+
         // Astronauts
         [HttpPost("{missionId:int}/astronauts", Name = "AssignAstronautsToMission")]
         [ResponseCache(NoStore = true)]

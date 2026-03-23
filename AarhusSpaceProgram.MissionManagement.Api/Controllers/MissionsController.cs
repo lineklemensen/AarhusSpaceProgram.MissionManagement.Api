@@ -154,43 +154,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
-        [HttpGet("overview", Name = "GetMissionOverview")]
-        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<ActionResult<RestDTO<List<MissionOverviewDTO>>>> GetOverview()
-        {
-            var overview = await _context.Missions
-                .AsNoTracking()
-                .OrderBy(m => m.Status)
-                .Select(m => new MissionOverviewDTO
-                {
-                    Id = m.Id,
-                    Name = m.Name,
-                    ManagerName = m.Manager != null ? $"{m.Manager}" : "Unassigned",
-                    Status = m.Status.ToString(),
-                    LaunchDate = m.LaunchDate,
-                    RocketModel = m.Rocket != null ? m.Rocket.Name : "Unassigned",
-                    LaunchpadLocation = m.Launchpad != null ? m.Launchpad.Location : "Unassigned",
-                    TargetCelestialBody = m.TargetBody != null ? m.TargetBody.Name : "Unassigned"
-                })
-                .ToListAsync();
-
-            return Ok(new RestDTO<List<MissionOverviewDTO>>
-            {
-                Data = overview,
-                Links = new List<LinkDTO>
-                {
-                    new LinkDTO(
-                        Url.Action(
-                            action: nameof(GetOverview),
-                            controller: "Missions",
-                            values: null,
-                            protocol: Request.Scheme)!,
-                        "self",
-                        "GET"),
-                }
-            });
-        }
-
         // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateMission")]
         [ResponseCache(NoStore = true)]
