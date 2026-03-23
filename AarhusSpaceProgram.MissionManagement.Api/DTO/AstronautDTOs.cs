@@ -35,6 +35,18 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public int HoursInSpace { get; init; }
     }
 
+    public record AstronautExperienceListItemDTO
+    {
+        public int Id { get; init; }
+        public string Name { get; init; } = null!;
+
+        public int HoursInSpace { get; init; }
+
+        public int HoursInSimulation { get; init; }
+
+        public int TotalExperience => HoursInSpace + HoursInSimulation;
+    }
+
     public sealed class UpdateAstronautDTO
     {
         public string? Name { get; set; } = null!;

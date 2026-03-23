@@ -157,6 +157,40 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        [HttpGet("experience", Name = "GetAstronautsByExperience")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<AstronautExperienceListItemDTO>>> GetByExperience()
+        {
+            var astronauts = await _context.Astronauts
+                .AsNoTracking()
+                .OrderByDescending(a => a.HoursInSpace)
+                .ThenByDescending(a => a.HoursInSimulation)
+                .Select(static a => new AstronautExperienceListItemDTO
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    HoursInSpace = a.HoursInSpace,
+                    HoursInSimulation = a.HoursInSimulation,
+                })
+                .ToArrayAsync();
+
+            return Ok(new RestDTO<AstronautExperienceListItemDTO[]>
+            {
+                Data = astronauts,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetByExperience),
+                            controller: "Astronauts",
+                            values: null,
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            });
+        }
+
         // UPDATE
         [HttpPatch("{id:int}", Name = "UpdateAstronaut")]
         [ResponseCache(NoStore = true)]
