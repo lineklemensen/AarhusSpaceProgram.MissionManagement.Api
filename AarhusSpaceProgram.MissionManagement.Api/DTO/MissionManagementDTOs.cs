@@ -65,5 +65,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
             [Required]
             public int? ManagerId { get; set; }
         }
+
+        // Rocket
+        public sealed class RocketAssignmentDTO
+        {
+            [Required]
+            public int MissionId { get; set; }
+
+            [Required]
+            public int? RocketId { get; set; }
+        }
     }
 }

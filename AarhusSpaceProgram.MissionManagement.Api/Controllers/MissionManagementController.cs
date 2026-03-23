@@ -155,7 +155,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         // Celestial Body
         [HttpPut("target", Name = "AssignTarget")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult<RestDTO<object>>> AssignTarget(CelestialBodyAssignmentDTO dto)
+        public async Task<ActionResult<RestDTO<CelestialBodyAssignmentDTO>>> AssignTarget(CelestialBodyAssignmentDTO dto)
         {
             var mission = await _context.Missions
                 .Where(m => m.Id == dto.MissionId)
@@ -238,7 +238,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         // Manager
         [HttpPut("manager", Name = "AssignManager")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult<RestDTO<object>>> AssignManager(ManagerAssignmentDTO dto)
+        public async Task<ActionResult<RestDTO<ManagerAssignmentDTO>>> AssignManager(ManagerAssignmentDTO dto)
         {
             var mission = await _context.Missions
                 .Where(m => m.Id == dto.MissionId)
@@ -302,6 +302,89 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             };
 
             return Ok(new RestDTO<ManagerAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
+        // Rocket
+        [HttpPut("rocket", Name = "AssignRocket")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<RocketAssignmentDTO>>> AssignRocket(RocketAssignmentDTO dto)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == dto.MissionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {dto.MissionId} not found.");
+
+            var rocket = await _context.Rockets
+                .Where(m => m.Id == dto.RocketId)
+                .FirstOrDefaultAsync();
+
+            if (rocket == null)
+                return NotFound($"Rocket with id {dto.RocketId} not found.");
+
+            mission.RocketId = dto.RocketId;
+            await _context.SaveChangesAsync();
+
+            var result = new RocketAssignmentDTO
+            {
+                MissionId = mission.Id,
+                RocketId = rocket.Id
+            };
+
+            return Ok(new RestDTO<RocketAssignmentDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: "GetById",
+                            controller: "Missions",
+                            values: new { id = mission.Id },
+                            protocol: Request.Scheme)!,
+                        "mission",
+                        "GET"),
+                }
+            });
+        }
+
+        [HttpDelete("rocket", Name = "RemoveRocket")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<RocketAssignmentDTO>>> RemoveRocket(int missionId)
+        {
+            var mission = await _context.Missions
+                .Where(m => m.Id == missionId)
+                .FirstOrDefaultAsync();
+
+            if (mission == null)
+                return NotFound($"Mission with id {missionId} not found.");
+
+            mission.RocketId = null;
+
+            await _context.SaveChangesAsync();
+
+            var result = new RocketAssignmentDTO
+            {
+                MissionId = mission.Id,
+                RocketId = null
+            };
+
+            return Ok(new RestDTO<RocketAssignmentDTO>
             {
                 Data = result,
                 Links = new List<LinkDTO>
