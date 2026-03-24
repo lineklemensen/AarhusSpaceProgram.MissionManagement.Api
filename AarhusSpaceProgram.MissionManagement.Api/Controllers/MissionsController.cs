@@ -15,8 +15,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         private readonly ILogger<MissionsController> _logger;
 
-        private readonly ILogger _asplogger;
-
         public MissionsController(
             MissionManagementDbContext context, 
             ILogger<MissionsController> logger)
