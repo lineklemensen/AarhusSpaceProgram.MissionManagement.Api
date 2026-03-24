@@ -222,7 +222,21 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 mission.Name = dto.Name;
 
             if (dto.LaunchDate != null)
+            {
+                if (mission.LaunchpadId.HasValue)
+                {
+                    var overlappingMission = await _context.Missions
+                        .Where(m => m.Id != id 
+                                 && m.LaunchpadId == mission.LaunchpadId 
+                                 && m.LaunchDate == dto.LaunchDate)
+                        .AnyAsync();
+
+                    if (overlappingMission)
+                        return BadRequest("The assigned launchpad is already booked for another mission on the requested launch date.");
+                }
+
                 mission.LaunchDate = dto.LaunchDate;
+            }
 
             if (dto.DurationHours != null)
                 mission.DurationHours = dto.DurationHours;
@@ -250,6 +264,22 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 //Constraint 4: Cannot become Active without at least 1 assigned astronaut
                 if (status == MissionStatus.Active && mission.AstronautAssignments.Count == 0)
                     return BadRequest("At least 1 astronaut must be assigned before a mission can become Active.");
+
+                // Constraint 5: To become Planned, a mission must have a Target, Launchpad, Rocket, and LaunchDate.
+                if (status == MissionStatus.Planned)
+                {
+                    var missingRequirements = new List<string>();
+                    
+                    if (mission.CelestialBodyId == null) missingRequirements.Add("Target Celestial Body");
+                    if (mission.LaunchpadId == null) missingRequirements.Add("Launchpad");
+                    if (mission.RocketId == null) missingRequirements.Add("Rocket");
+                    if (mission.LaunchDate == null && dto.LaunchDate == null) missingRequirements.Add("Launch Date");
+
+                    if (missingRequirements.Any())
+                    {
+                        return BadRequest($"A mission cannot become Planned. Missing requirements: {string.Join(", ", missingRequirements)}");
+                    }
+                }
 
                 mission.Status = status;
             }

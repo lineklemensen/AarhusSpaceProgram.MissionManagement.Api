@@ -424,6 +424,20 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             if (launchpad == null)
                 return NotFound($"Launchpad with id {dto.LaunchpadId} not found.");
 
+            if (mission.LaunchDate.HasValue)
+            {
+                var conflictingMission = await _context.Missions
+                    .Where(m => m.Id != mission.Id
+                        && m.LaunchpadId == dto.LaunchpadId
+                        && m.LaunchDate == mission.LaunchDate)
+                    .FirstOrDefaultAsync();
+
+                if (conflictingMission != null)
+                {
+                    return BadRequest($"Launchpad with id {dto.LaunchpadId} is already assigned to mission '{conflictingMission.Name}' (id: {conflictingMission.Id}) on {mission.LaunchDate.Value:d}.");
+                }
+            }
+
             mission.LaunchpadId = dto.LaunchpadId;
             await _context.SaveChangesAsync();
 
