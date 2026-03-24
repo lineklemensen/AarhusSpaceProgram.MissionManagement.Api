@@ -1,3 +1,4 @@
+using AarhusSpaceProgram.MissionManagement.Api.Logging;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,11 @@ builder.Services.AddCors(options => {
         });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<AuditActionFilter>();
+});
+builder.Services.AddScoped<AarhusSpaceProgram.MissionManagement.Api.Logging.AuditActionFilter>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

@@ -30,17 +30,14 @@
             await _next(context);
 
             context.Items.TryGetValue(AuditContext.ActionKey, out var actionObj);
-            context.Items.TryGetValue(AuditContext.RequestDataKey, out var requestObj);
             context.Items.TryGetValue(AuditContext.ResponseDataKey, out var responseObj);
 
             _asplogger.LogInformation(
-                "HTTP {Method} {Path}{QueryString} responded {StatusCode} action={Action} request={@Request} response={@Response}",
+                "HTTP {Method} method {Action} at {Path} responded {StatusCode} ({@Entity})",
                 context.Request.Method,
-                context.Request.Path.Value,
-                context.Request.QueryString.Value,
-                context.Response.StatusCode,
                 actionObj,
-                requestObj,
+                context.Request.Path.Value,
+                context.Response.StatusCode,
                 responseObj);
         }
     }
