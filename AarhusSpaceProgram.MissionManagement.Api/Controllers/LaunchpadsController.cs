@@ -23,6 +23,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // CREATE
+        /// <summary>
+        /// Create launchpad
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost(Name = "CreateLaunchpad")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> Post(CreateLaunchpadDTO dto)
@@ -84,6 +89,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // READ
+        /// <summary>
+        /// List all launchpads
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "GetLaunchpads")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<LaunchpadListItemDTO[]>> Get()
@@ -116,6 +125,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             };
         }
 
+        /// <summary>
+        /// Get launchpad by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetLaunchpadById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> GetById(int id)
@@ -154,6 +168,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // UPDATE
+        /// <summary>
+        /// Update launchpad
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateLaunchpad")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> Patch(int id, UpdateLaunchpadDTO dto)
@@ -214,6 +234,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // DELETE
+        /// <summary>
+        /// Delete launchpad
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:int}", Name = "DeleteLaunchpad")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)

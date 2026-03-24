@@ -23,6 +23,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // CREATE
+        /// <summary>
+        /// Create a new astronaut
+        /// </summary>
+        /// <remarks>
+        /// The Rank property must be one of the following values: Candidate, Astronaut, Pilot, Commander, MissionSpecialist, PayloadSpecialist, EVASpecialist. 
+        /// HoursInSimulation and HoursInSpace cannot be negative.
+        /// </remarks>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost(Name = "CreateAstronaut")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> Post(CreateAstronautDTO dto)
@@ -86,6 +95,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // READ
+        /// <summary>
+        /// List all astronauts
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "GetAstronauts")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<AstronautListItemDTO[]>> Get()
@@ -119,6 +132,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             };
         }
 
+        /// <summary>
+        /// Get astronaut by ID
+        /// </summary>
+        /// <remarks>
+        /// You can search for a specific astronaut by the astronaut's unique ID. The response will include the astronaut's name, rank, paygrade, hours in simulation, and hours in space.
+        /// </remarks> 
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetAstronautById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> GetById(int id)
@@ -157,6 +178,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        /// <summary>
+        /// Astronauts ordered by experience
+        /// </summary>
+        /// <remarks>
+        /// Get a list of all astronauts, ordered by experience. The list is descending, so the most experienced astronauts are at the top.
+        /// Experience is determined by hours in space. If two astronauts have the same hours in space, the tiebreaker is hours in simulation.
+        /// </remarks>
+        /// <returns></returns>
         [HttpGet("experience", Name = "GetAstronautsByExperience")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<AstronautExperienceListItemDTO>>> GetByExperience()
@@ -192,6 +221,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // UPDATE
+        /// <summary>
+        /// Update astronaut info
+        /// </summary>
+        /// <remarks>
+        /// Use the astronaut ID to update the astronaut's information. You can update any of the following properties: Name, Rank, Paygrade, HoursInSimulation, HoursInSpace. The Rank property must be one of the following values: Candidate, Astronaut, Pilot, Commander, MissionSpecialist, PayloadSpecialist, EVASpecialist. HoursInSimulation and HoursInSpace cannot be negative or decreased.
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateAstronaut")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateAstronautDTO dto)
@@ -273,6 +311,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // DELETE
+        /// <summary>
+        /// Delete an astronaut
+        /// </summary>
+        /// <remarks>
+        /// Use the astronaut ID to delete the astronaut from the system. This action is irreversible and will remove all records of the astronaut, including their mission assignments. Use with caution.
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:int}", Name = "DeleteAstronaut")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)

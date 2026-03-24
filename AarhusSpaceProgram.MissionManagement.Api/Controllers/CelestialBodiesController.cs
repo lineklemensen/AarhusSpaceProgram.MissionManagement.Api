@@ -6,6 +6,7 @@ using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
+    [Tags("Celestial Bodies")]
     [Route("[controller]")]
     [ApiController]
     public class CelestialBodiesController : ControllerBase
@@ -23,6 +24,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // CREATE
+        /// <summary>
+        /// Create celestial body
+        /// </summary>
+        /// <remarks>
+        /// Use this endpoint to create a new celestial body. The BodyType must be either "Planet" or "Moon". If the BodyType is "Planet", the PlanetClass must be provided and can be "Rocky", "GasGiant", or "IceGiant". If the BodyType is "Moon", the PlanetClass should not be provided. The DistanceValueToParentAU represents the distance to its parent celestial body in astronomical units (AU). If ParentId is provided, it must reference an existing celestial body.   
+        /// </remarks>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost(Name = "CreateCelestialBody")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<CelestialBodyListItemDTO>>> Post(CreateCelestialBodyDTO dto)
@@ -113,6 +122,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // READ
+        /// <summary>
+        /// List all celestial bodies
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "GetCelestialBodies")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<CelestialBodyListItemDTO[]>> Get()
@@ -147,6 +160,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             };
         }
 
+        /// <summary>
+        /// Get celestial body by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetCelestialBodyById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<CelestialBodyListItemDTO>>> GetById(int id)
@@ -186,6 +204,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // UPDATE
+        /// <summary>
+        /// Update celestial body
+        /// </summary>
+        /// <remarks>
+        /// Use the ID of the celestial body you want to update in the URL. You can update the Name, PlanetClass, and ParentId properties. The same validation rules apply as when creating a celestial body: if updating PlanetClass, it must be valid for the BodyType (i.e., only planets can have a PlanetClass). If updating ParentId, it must reference an existing celestial body and cannot be the same as the ID of the celestial body being updated.
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateCelestialBody")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<CelestialBodyListItemDTO>>> Patch(int id, UpdateCelestialBodyDTO dto)

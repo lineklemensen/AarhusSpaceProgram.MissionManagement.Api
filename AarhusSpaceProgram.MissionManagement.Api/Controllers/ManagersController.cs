@@ -22,6 +22,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // CREATE
+        /// <summary>
+        /// Create manager
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost(Name = "CreateManager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Post(CreateManagerDTO dto)
@@ -74,6 +79,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // READ
+        /// <summary>
+        /// List all managers
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "GetManagers")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<ManagerListItemDTO[]>> Get()
@@ -103,6 +112,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             };
         }
 
+        /// <summary>
+        /// Get manager by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetManagerById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> GetById(int id)
@@ -138,6 +152,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // UPDATE
+        /// <summary>
+        /// Update manager info
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}", Name = "UpdateManager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(int id, UpdateManagerDTO dto)
@@ -177,6 +197,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // DELETE
+        /// <summary>
+        /// Delete manager
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:int}", Name = "DeleteManager")]
         [ResponseCache(NoStore = true)]
         public async Task<IActionResult> Delete(int id)

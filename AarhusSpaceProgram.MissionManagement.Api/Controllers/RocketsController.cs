@@ -22,6 +22,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // CREATE
+        /// <summary>
+        /// Create rocket
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost(Name = "CreateRocket")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<RocketListItemDTO>>> Post(CreateRocketDTO dto)
@@ -84,6 +89,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // READ
+        /// <summary>
+        /// List all rockets
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "GetRockets")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<RocketListItemDTO[]>> Get()
@@ -118,6 +127,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             };
         }
 
+        /// <summary>
+        /// Get rocket by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetRocketById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<RocketListItemDTO>>> GetById(int id)
@@ -158,6 +172,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // UPDATE
+        /// <summary>
+        /// Update rocket
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateRocket")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateRocketDTO dto)
@@ -238,6 +258,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // DELETE
+        /// <summary>
+        /// Delete rocket
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:int}", Name = "DeleteRocket")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)

@@ -23,6 +23,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // CREATE
+        /// <summary>
+        /// Create scientist
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost(Name = "CreateScientist")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> Post(CreateScientistDTO dto)
@@ -81,6 +86,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // READ
+        /// <summary>
+        /// List all scientists
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name = "GetScientists")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<ScientistListItemDTO[]>> Get()
@@ -113,6 +122,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             };
         }
 
+        /// <summary>
+        /// Get scientist by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetScientistById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> GetById(int id)
@@ -151,6 +165,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // UPDATE
+        /// <summary>
+        /// Update scientist info
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateScientist")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateScientistDTO dto)
@@ -200,6 +220,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         // DELETE
+        /// <summary>
+        /// Delete scientist
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:int}", Name = "DeleteScientist")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)
