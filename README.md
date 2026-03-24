@@ -1,9 +1,12 @@
 # AarhusSpaceProgram.MissionManagement.Api
 
 ## Project URL's
-**API base URL**: http://localhost:5110
-**Scalar UI**: http://localhost:5110/scalar/
-**OpenAPI JSON**: http://localhost:5110/openapi/v1.json
+**API base URL**: http://localhost:5110  
+**Scalar UI**: http://localhost:5110/scalar/  
+**OpenAPI JSON**: http://localhost:5110/openapi/v1.json  
+
+## E/R diagram
+![alt text](image.png)
 
 ## Process description
 Before starting the project, I planned how I could manage the project. This was important because I was to develop the project alone. I made a backlog to ensure I would meet all the requirements.  
