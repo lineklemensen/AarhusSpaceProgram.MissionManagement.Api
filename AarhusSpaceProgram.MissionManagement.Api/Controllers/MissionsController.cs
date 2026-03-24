@@ -37,15 +37,28 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Post(CreateMissionDTO dto)
         {
-            if (!Enum.TryParse<MissionStatus>(dto.Status, out var status))
+            MissionStatus status;
+
+            if (string.IsNullOrWhiteSpace(dto.Status))
+            {
+                status = MissionStatus.Created;
+            }
+            else if (!Enum.TryParse(dto.Status, out status))
+            {
                 return BadRequest($"Invalid status value: {dto.Status}");
+            }
 
             if (!Enum.TryParse<MissionType>(dto.Type, out var type))
                 return BadRequest($"Invalid type value: {dto.Type}");
 
+            var manager = await _context.Managers.FirstOrDefaultAsync(m => m.Id == dto.ManagerId);
+            if (manager == null)
+                return BadRequest($"Manager with ID {dto.ManagerId} does not exist");
+
             var mission = new Mission
             {
                 Name = dto.Name,
+                ManagerId = dto.ManagerId,
                 LaunchDate = dto.LaunchDate,
                 DurationHours = dto.DurationHours,
                 Status = status,
@@ -59,6 +72,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             {
                 Id = mission.Id,
                 Name = mission.Name,
+                Manager = manager.Name,
                 LaunchDate = mission.LaunchDate,
                 DurationHours = mission.DurationHours,
                 Status = mission.Status.ToString(),
@@ -149,7 +163,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 {
                     Id = m.Id,
                     Name = m.Name,
-                    Status = m.Status.ToString()
+                    Manager = m.Manager != null ? m.Manager.Name : "Unassigned",
+                    LaunchDate = m.LaunchDate,
+                    DurationHours = m.DurationHours,
+                    Status = m.Status.ToString(),
+                    Type = m.Type.ToString()
                 })
                 .FirstOrDefaultAsync();
 
@@ -177,6 +195,13 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <summary>
         /// Update mission
         /// </summary>
+        /// <remarks>
+        /// A mission's status can only be updated according to the following rules:
+        /// Constraint 1: A mission cannot move directly from Created to Active
+        /// Constraint 2: A mission cannot move from Completed back to Active
+        /// Constraint 3: Only Active missions can become Completed, Failed, or Aborted
+        /// Constraint 4: A mission cannot become Active without at least 1 assigned astronaut
+        /// </remarks>
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
@@ -185,6 +210,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Patch(int id, UpdateMissionDTO dto)
         {
             var mission = await _context.Missions
+                .Include(m => m.Manager)
+                .Include(m => m.AstronautAssignments)
                 .Where(m => m.Id == id)
                 .FirstOrDefaultAsync();
 
@@ -204,6 +231,26 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             {
                 if (!Enum.TryParse<MissionStatus>(dto.Status, out var status))
                     return BadRequest($"Invalid status value: {dto.Status}");
+
+                // Constraint 1: Cannot move directly from Created to Active
+                if (mission.Status == MissionStatus.Created && status == MissionStatus.Active)
+                    return BadRequest("A mission cannot move directly from Created to Active.");
+
+                // Constraint 2: Cannot move from Completed back to Active
+                if (mission.Status == MissionStatus.Completed && status == MissionStatus.Active)
+                    return BadRequest("A mission cannot move from Completed back to Active.");
+
+                // Constraint 3: Only Active missions can become Completed, Failed, or Aborted
+                if ((status == MissionStatus.Completed || status == MissionStatus.Failed || status == MissionStatus.Aborted) 
+                    && mission.Status != MissionStatus.Active)
+                {
+                    return BadRequest($"A mission can only become {status} if its current status is Active.");
+                }
+
+                //Constraint 4: Cannot become Active without at least 1 assigned astronaut
+                if (status == MissionStatus.Active && mission.AstronautAssignments.Count == 0)
+                    return BadRequest("At least 1 astronaut must be assigned before a mission can become Active.");
+
                 mission.Status = status;
             }
 
@@ -220,6 +267,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             {
                 Id = mission.Id,
                 Name = mission.Name,
+                Manager = mission.Manager != null ? mission.Manager.Name : "Unassigned",
                 LaunchDate = mission.LaunchDate,
                 DurationHours = mission.DurationHours,
                 Status = mission.Status.ToString(),

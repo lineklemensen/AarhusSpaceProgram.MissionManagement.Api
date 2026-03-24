@@ -8,6 +8,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         [StringLength(200, MinimumLength = 1)]
         public string Name { get; set; } = null!;
 
+        [Required]
+        public int ManagerId { get; set; }
+
         public DateOnly? LaunchDate { get; set; }
 
         public int? DurationHours { get; set; }
@@ -33,11 +36,13 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 
         public string Name { get; init; } = null!;
 
+        public string Manager { get; init; } = null!;
+
         public DateOnly? LaunchDate { get; init; }
 
         public int? DurationHours { get; init; }
 
-        public string Status { get; init; } = null!;
+        public string? Status { get; init; } = null!;
 
         public string Type { get; init; } = null!;
     }
