@@ -1,4 +1,4 @@
-﻿namespace AarhusSpaceProgram.MissionManagement.Api.Middleware
+﻿namespace AarhusSpaceProgram.MissionManagement.Api.Logging
 {
     public sealed class HttpLoggingMiddleware
     {
@@ -8,7 +8,7 @@
         public HttpLoggingMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
         {
             _next = next;
-            _asplogger = loggerFactory.CreateLogger("ASPMiddleware.HttpLogs");
+            _asplogger = loggerFactory.CreateLogger("ASP.HttpLogs");
         }
 
         public async Task Invoke(HttpContext context)
@@ -21,7 +21,7 @@
                 HttpMethods.IsPatch(method) ||
                 HttpMethods.IsDelete(method);
 
-            if (isWrite)
+            if (!isWrite)
             {
                 await _next(context);
                 return;
@@ -29,11 +29,19 @@
 
             await _next(context);
 
+            context.Items.TryGetValue(AuditContext.ActionKey, out var actionObj);
+            context.Items.TryGetValue(AuditContext.RequestDataKey, out var requestObj);
+            context.Items.TryGetValue(AuditContext.ResponseDataKey, out var responseObj);
+
             _asplogger.LogInformation(
-                "HTTP {Method} {Path} responded {StatusCode}",
-                method,
+                "HTTP {Method} {Path}{QueryString} responded {StatusCode} action={Action} request={@Request} response={@Response}",
+                context.Request.Method,
                 context.Request.Path.Value,
-                context.Response.StatusCode);
+                context.Request.QueryString.Value,
+                context.Response.StatusCode,
+                actionObj,
+                requestObj,
+                responseObj);
         }
     }
 }

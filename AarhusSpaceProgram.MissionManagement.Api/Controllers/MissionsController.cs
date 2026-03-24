@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
+using AarhusSpaceProgram.MissionManagement.Api.Logging;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -163,8 +164,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Patch(int id, UpdateMissionDTO dto)
         {
-            _asplogger.LogInformation("TEST UpdateMission (PATCH) called with id: {Id} and DTO: {@DTO}", id, dto);
-
             var mission = await _context.Missions
                 .Where(m => m.Id == id)
                 .FirstOrDefaultAsync();
