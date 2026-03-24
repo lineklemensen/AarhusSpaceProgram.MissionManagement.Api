@@ -7,11 +7,9 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((context, services, loggerConfiguration) =>
+builder.Host.UseSerilog((cxt, svc, lc) =>
 {
-    loggerConfiguration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services);
+    lc.ReadFrom.Configuration(cxt.Configuration);
 });
 
 builder.Services.AddCors(options => {

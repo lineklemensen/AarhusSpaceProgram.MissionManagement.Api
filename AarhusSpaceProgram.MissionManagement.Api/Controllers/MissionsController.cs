@@ -22,6 +22,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _logger = logger;
         }
 
+        // Test
+        [HttpPost("log")]
+        public IActionResult Log()
+        {
+            _logger.LogInformation("TEST: POST api/test/log blev kaldt");
+            return Ok(new { ok = true });
+        }
+
         // CREATE
         [HttpPost(Name = "CreateMission")]
         [ResponseCache(NoStore = true)]
