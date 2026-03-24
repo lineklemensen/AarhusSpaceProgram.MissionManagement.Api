@@ -30,8 +30,24 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             if (!Enum.TryParse<CelestialBodyType>(dto.BodyType, true, out var bodyType))
                 return BadRequest($"Invalid BodyType: {dto.BodyType}");
 
-            if (!Enum.TryParse<PlanetClass>(dto.PlanetClass, true, out var planetClass))
-                return BadRequest($"Invalid PlanetClass: {dto.PlanetClass}");
+            PlanetClass? planetClass = null;
+
+            // Enforce that PlanetClass is only provided for BodyType "Planet"
+            if (bodyType == CelestialBodyType.Planet)
+            {
+                if (string.IsNullOrWhiteSpace(dto.PlanetClass))
+                    return BadRequest("PlanetClass is required for a planet.");
+
+                if (!Enum.TryParse<PlanetClass>(dto.PlanetClass, true, out var parsedPlanetClass))
+                    return BadRequest($"Invalid PlanetClass: {dto.PlanetClass}");
+
+                planetClass = parsedPlanetClass;
+            }
+            else if (bodyType == CelestialBodyType.Moon)
+            {
+                if (!string.IsNullOrWhiteSpace(dto.PlanetClass))
+                    return BadRequest("PlanetClass should not be provided for a moon.");
+            }
 
             var body = new CelestialBody
             {
@@ -44,6 +60,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
             _context.CelestialBodies.Add(body);
             await _context.SaveChangesAsync();
+
+            // Load parent name for the response if ParentId is provided
+            if (body.ParentId != null)
+            {
+                await _context.Entry(body)
+                    .Reference(b => b.Parent)
+                    .LoadAsync();
+            }
 
             var result = new CelestialBodyListItemDTO
             {
@@ -166,9 +190,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<CelestialBodyListItemDTO>>> Patch(int id, UpdateCelestialBodyDTO dto)
         {
-            if (!Enum.TryParse<PlanetClass>(dto.PlanetClass, true, out var planetClass))
-                return BadRequest($"Invalid PlanetClass: {dto.PlanetClass}");
-
             var body = await _context.CelestialBodies
                 .Where(cb => cb.Id == id)
                 .FirstOrDefaultAsync();
@@ -180,7 +201,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 body.Name = dto.Name;
 
             if (dto.PlanetClass != null)
+            {
+                if (body.BodyType == CelestialBodyType.Moon)
+                    return BadRequest("A moon cannot have a PlanetClass.");
+
+                if (!Enum.TryParse<PlanetClass>(dto.PlanetClass, true, out var planetClass))
+                    return BadRequest($"Invalid PlanetClass: {dto.PlanetClass}");
+
                 body.PlanetClass = planetClass;
+            }
 
             if (dto.ParentId != null)
             {
@@ -202,7 +231,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 Id = body.Id,
                 Name = body.Name,
                 BodyType = body.BodyType.ToString(),
-                PlanetClass = body.PlanetClass.ToString(),
+                // Safely handle null when formatting the PlanetClass property for the response check:
+                PlanetClass = body.PlanetClass != null ? body.PlanetClass.ToString() : null,
                 ParentName = body.Parent != null ? body.Parent.Name : null,
             };
 
