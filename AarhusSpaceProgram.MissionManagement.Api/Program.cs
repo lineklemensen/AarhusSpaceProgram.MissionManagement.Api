@@ -57,6 +57,8 @@ app.UseCors();
 
 app.UseAuthorization();
 
+app.UseMiddleware<AarhusSpaceProgram.MissionManagement.Api.Middleware.HttpLoggingMiddleware>();
+
 app.MapGet("/error", 
     [EnableCors("AnyOrigin")]
     [ResponseCache(NoStore = true)] () => 

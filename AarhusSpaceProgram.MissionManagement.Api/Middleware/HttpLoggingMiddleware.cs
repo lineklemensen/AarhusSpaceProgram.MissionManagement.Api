@@ -11,5 +11,29 @@
             _asplogger = loggerFactory.CreateLogger("ASPMiddleware.HttpLogs");
         }
 
+        public async Task Invoke(HttpContext context)
+        {
+            var method = context.Request.Method;
+
+            var isWrite =
+                HttpMethods.IsPost(method) ||
+                HttpMethods.IsPut(method) ||
+                HttpMethods.IsPatch(method) ||
+                HttpMethods.IsDelete(method);
+
+            if (isWrite)
+            {
+                await _next(context);
+                return;
+            }
+
+            await _next(context);
+
+            _asplogger.LogInformation(
+                "HTTP {Method} {Path} responded {StatusCode}",
+                method,
+                context.Request.Path.Value,
+                context.Response.StatusCode);
+        }
     }
 }

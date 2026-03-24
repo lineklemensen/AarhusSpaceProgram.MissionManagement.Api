@@ -14,20 +14,16 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         private readonly ILogger<MissionsController> _logger;
 
+        private readonly ILogger _asplogger;
+
         public MissionsController(
             MissionManagementDbContext context, 
-            ILogger<MissionsController> logger)
+            ILogger<MissionsController> logger,
+            ILoggerFactory loggerFactory)
         {
             _context = context;
             _logger = logger;
-        }
-
-        // Test
-        [HttpPost("log")]
-        public IActionResult Log()
-        {
-            _logger.LogInformation("TEST: POST api/test/log blev kaldt");
-            return Ok(new { ok = true });
+            _asplogger = loggerFactory.CreateLogger("ASPMiddleware.HttpLogs");
         }
 
         // CREATE
@@ -117,10 +113,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 {
                     new LinkDTO(
                         Url.Action(
-                            null, 
-                            "Missions", 
-                            null, 
-                            Request.Scheme)!,
+                            action: nameof(Get), 
+                            controller: "Missions", 
+                            values: null, 
+                            protocol: Request.Scheme)!,
                         "self",
                         "GET"),
                 }
@@ -167,6 +163,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Patch(int id, UpdateMissionDTO dto)
         {
+            _asplogger.LogInformation("TEST UpdateMission (PATCH) called with id: {Id} and DTO: {@DTO}", id, dto);
+
             var mission = await _context.Missions
                 .Where(m => m.Id == id)
                 .FirstOrDefaultAsync();
