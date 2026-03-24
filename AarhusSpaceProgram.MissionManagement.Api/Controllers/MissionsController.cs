@@ -19,12 +19,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         public MissionsController(
             MissionManagementDbContext context, 
-            ILogger<MissionsController> logger,
-            ILoggerFactory loggerFactory)
+            ILogger<MissionsController> logger
         {
             _context = context;
             _logger = logger;
-            _asplogger = loggerFactory.CreateLogger("ASPMiddleware.HttpLogs");
         }
 
         // CREATE
