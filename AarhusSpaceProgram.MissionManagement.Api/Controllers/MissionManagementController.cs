@@ -155,14 +155,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         // Astronauts
         /// <summary>
-        /// Assign astronauts to a mission
+        /// Assign astronaut to a mission
         /// </summary>
-        /// <remarks>Note that this endpoint allows you to assign multiple astronauts to a single mission.
-        /// </remarks>
         /// <param name="missionId"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Astronauts")]
+        [Tags("Astronauts", "Missions", "Assigmenments")]
         [HttpPost("{missionId:int}/astronauts", Name = "AssignAstronautsToMission")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<object>>> AssignAstronauts(int missionId, AssignAstronautsToMissionDTO dto)
@@ -203,6 +201,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 .Except(alreadyAssignedAstronautIds)
                 .ToList();
 
+            // Add new assignments only if not already assigned
             foreach (var astronautId in astronautIdsToAssign)
             {
                 _context.MissionAstronautAssignments.Add(new MissionAstronautAssignment
@@ -211,14 +210,21 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                     AstronautId = astronautId
                 });
             }
-
             await _context.SaveChangesAsync();
+
+            // Fetch all currently assigned astronauts for this mission
+            var allAssignedAstronauts = await _context.MissionAstronautAssignments
+                .Where(ma => ma.MissionId == missionId)
+                .Select(ma => new {
+                    ma.AstronautId,
+                    ma.Astronaut.Name
+                })
+                .ToListAsync();
 
             var response = new
             {
                 MissionId = missionId,
-                AssignedAstronautIds = astronautIdsToAssign,
-                AlreadyAssignedAstronautIds = alreadyAssignedAstronautIds
+                AssignedAstronauts = allAssignedAstronauts
             };
 
             return Ok(new RestDTO<object>
@@ -239,15 +245,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         /// <summary>
-        /// Remove astronauts from a mission
+        /// Remove astronaut from a mission
         /// </summary>
-        /// <remarks>
-        /// Note that this encpoint allows you to remove multiple astrnouts from a mission.
-        /// </remarks>
         /// <param name="missionId"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Astronauts")]
+        [Tags("Astronauts", "Missions", "Assigmenments")]
         [HttpPost("{missionId:int}/astronauts/remove", Name = "RemoveAstronautsFromMission")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<object>>> RemoveAstronauts(int missionId, RemoveAstronautsFromMissionDTO dto)
@@ -307,7 +310,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Celestial Bodies")]
+        [Tags("Celestial Bodies", "Missions", "Assigmenments")]
         [HttpPut("target", Name = "AssignTarget")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<CelestialBodyAssignmentDTO>>> AssignTarget(CelestialBodyAssignmentDTO dto)
@@ -357,7 +360,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="missionId"></param>
         /// <returns></returns>
-        [Tags("Celestial Bodies")]
+        [Tags("Celestial Bodies", "Missions", "Assigmenments")]
         [HttpDelete("target", Name = "RemoveTarget")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<CelestialBodyAssignmentDTO>>> RemoveTarget(int missionId)
@@ -405,7 +408,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </remarks>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Launchpads")]
+        [Tags("Launchpads", "Missions", "Assigmenments")]
         [HttpPut("launchpad", Name = "AssignLaunchpad")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<LaunchpadAssignmentDTO>>> AssignLaunchpad(LaunchpadAssignmentDTO dto)
@@ -469,7 +472,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="missionId"></param>
         /// <returns></returns>
-        [Tags("Launchpads")]
+        [Tags("Launchpads", "Missions", "Assigmenments")]
         [HttpDelete("launchpad", Name = "RemoveLaunchpad")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<LaunchpadAssignmentDTO>>> RemoveLaunchpad(int missionId)
@@ -517,7 +520,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </remarks>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Managers")]
+        [Tags("Managers", "Missions", "Assigmenments")]
         [HttpPut("manager", Name = "AssignManager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerAssignmentDTO>>> AssignManager(ManagerAssignmentDTO dto)
@@ -567,7 +570,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="missionId"></param>
         /// <returns></returns>
-        [Tags("Managers")]
+        [Tags("Managers", "Missions", "Assigmenments")]
         [HttpDelete("manager", Name = "RemoveManager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerAssignmentDTO>>> RemoveManager(int missionId)
@@ -612,7 +615,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Rockets")]
+        [Tags("Rockets", "Missions", "Assigmenments")]
         [HttpPut("rocket", Name = "AssignRocket")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<RocketAssignmentDTO>>> AssignRocket(RocketAssignmentDTO dto)
@@ -662,7 +665,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="missionId"></param>
         /// <returns></returns>
-        [Tags("Rockets")]
+        [Tags("Rockets", "Missions", "Assigmenments")]
         [HttpDelete("rocket", Name = "RemoveRocket")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<RocketAssignmentDTO>>> RemoveRocket(int missionId)
@@ -703,15 +706,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         // Scientists
         /// <summary>
-        /// Assign scientists to a mission
+        /// Assign scientist to a mission
         /// </summary>
-        /// <remarks>
-        /// Note that this endpoints allows you to assign multiple scientists to a single mission.
-        /// </remarks>
         /// <param name="missionId"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Scientists")]
+        [Tags("Scientists", "Missions", "Assigmenments")]
         [HttpPost("{missionId:int}/scientists", Name = "AssignScientistsToMission")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<object>>> AssignScientists(int missionId, AssignScientistsToMissionDTO dto)
@@ -763,11 +763,20 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
             await _context.SaveChangesAsync();
 
+            // Fetch all currently assigned scientists for this mission
+            var allAssignedScientists = await _context.MissionScientistAssignments
+                .Where(ms => ms.MissionId == missionId)
+                .Select(ms => new
+                {
+                    ms.ScientistId,
+                    ms.Scientist.Name
+                })
+                .ToListAsync();
+
             var response = new
             {
                 MissionId = missionId,
-                AssignedScientistIds = scientistIdsToAssign,
-                AlreadyAssignedScientistIds = alreadyAssignedScientistIds
+                AssignedScientists = allAssignedScientists
             };
 
             return Ok(new RestDTO<object>
@@ -788,15 +797,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         }
 
         /// <summary>
-        /// Remove scientists from a mission
+        /// Remove scientist from a mission
         /// </summary>
-        /// <remarks>
-        /// Note that this endpoint allows you to remove multiple scientists from a mission.
-        /// </remarks>
         /// <param name="missionId"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [Tags("Scientists")]
+        [Tags("Scientists", "Missions", "Assigmenments")]
         [HttpPost("{missionId:int}/scietists/remove", Name = "RemoveScientistsFromMission")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<object>>> RemoveScientists(int missionId, RemoveScientistsFromMissionDTO dto)
