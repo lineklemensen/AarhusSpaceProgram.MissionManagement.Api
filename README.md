@@ -1,5 +1,10 @@
 # AarhusSpaceProgram.MissionManagement.Api
 
+## How to run the project
+1. Restore NuGet packages: `dotnet restore`  
+2. Build the solution: `dotnet build`  
+3. Run the application: `dotnet run`  
+
 ## Project URL's
 **API base URL**: http://localhost:5110  
 **Scalar UI**: http://localhost:5110/scalar/  
