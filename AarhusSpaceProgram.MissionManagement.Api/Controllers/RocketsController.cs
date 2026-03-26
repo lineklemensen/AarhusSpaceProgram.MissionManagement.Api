@@ -41,6 +41,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 WeightKg = dto.WeightKg
             };
 
+            if (dto.PayloadCapacityKg < 0)
+                return BadRequest("Payload capacity cannot be negative.");
+            if (dto.CrewCapacity < 0)
+                return BadRequest("Crew capacity cannot be negative.");
+            if (dto.FuelCapacityKg < 0)
+                return BadRequest("Fuel capacity cannot be negative.");
+            if (dto.WeightKg < 0)
+                return BadRequest("Weight cannot be negative.");
+
             _context.Rockets.Add(rocket);
             await _context.SaveChangesAsync();
 
