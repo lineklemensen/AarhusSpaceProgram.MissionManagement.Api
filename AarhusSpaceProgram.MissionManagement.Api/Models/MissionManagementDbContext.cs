@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Models
 {
-    public class MissionManagementDbContext : IdentityDbContext<AspUser>
+    public class MissionManagementDbContext : IdentityDbContext<AspUser, IdentityRole<int>, int>
     {
         public MissionManagementDbContext(
             DbContextOptions<MissionManagementDbContext> options)
@@ -21,6 +22,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             // Astronaut
             modelBuilder.Entity<Astronaut>(entity =>
             {
+                entity.HasOne(a => a.User)
+                    .WithOne(u => u.Astronaut)
+                    .HasForeignKey<Astronaut>(a => a.UserId);
+
                 entity.Property(a => a.Rank).HasConversion<string>();
 
                 entity.HasData(
@@ -124,6 +129,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             // Manager
             modelBuilder.Entity<Manager>(entity =>
             {
+                entity.HasOne(m => m.User)
+                    .WithOne(u => u.Manager)
+                    .HasForeignKey<Manager>(m => m.UserId);
+
                 entity.HasData(
                     new Manager
                     {
@@ -216,6 +225,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             // Scientist
             modelBuilder.Entity<Scientist>(entity =>
             {
+                entity.HasOne(s => s.User)
+                    .WithOne(u => u.Scientist)
+                    .HasForeignKey<Scientist>(s => s.UserId);
+
                 entity.HasData(
                     new Scientist
                     {
