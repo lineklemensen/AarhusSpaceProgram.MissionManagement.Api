@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Models
 {
-    public class MissionManagementDbContext : DbContext
+    public class MissionManagementDbContext : IdentityDbContext<AspUser>
     {
         public MissionManagementDbContext(
             DbContextOptions<MissionManagementDbContext> options)
