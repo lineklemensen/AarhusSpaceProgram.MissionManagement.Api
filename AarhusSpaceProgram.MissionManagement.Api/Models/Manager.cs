@@ -18,7 +18,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public ICollection<Mission> Missions { get; set; } = new List<Mission>();
 
         // Navigation property to the associated user account
-        public int? UserId { get; set; }
+        public string? UserId { get; set; }
         public AspUser? User { get; set; }
     }
 }

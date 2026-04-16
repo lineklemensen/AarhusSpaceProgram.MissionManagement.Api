@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Models
 {
-    public class MissionManagementDbContext : IdentityDbContext<AspUser, IdentityRole<int>, int>
+    public class MissionManagementDbContext : IdentityDbContext<AspUser>
     {
         public MissionManagementDbContext(
             DbContextOptions<MissionManagementDbContext> options)

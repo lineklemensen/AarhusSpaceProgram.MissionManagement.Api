@@ -2,7 +2,7 @@
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Models
 {
-    public class AspUser : IdentityUser<int>
+    public class AspUser : IdentityUser
     {
         public Astronaut? Astronaut { get; set; }
         public Scientist? Scientist { get; set; }
