@@ -91,9 +91,63 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         [HttpPost]
         // [ResponseCache(CacheProfileName = "NoCache")]
-        public async Task<ActionResult> Login()
+        public async Task<ActionResult> Login(LoginDTO input)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var user = await _userManager.FindByNameAsync(input.UserName);
+
+                    if (user == null || !await _userManager.CheckPasswordAsync(
+                            user, input.Password))
+                        throw new Exception("Invalid login attempt");
+                    else
+                    {
+                        var signigCredentials = new SigningCredentials(
+                            new SymmetricSecurityKey(
+                                System.Text.Encoding.UTF8.GetBytes(
+                                    _configuration["Jwt:SigningKey"])),
+                            SecurityAlgorithms.HmacSha256);
+
+                        var claims = new List<Claim>();
+                        claims.Add(new Claim(
+                            ClaimTypes.Name, user.UserName));
+
+                        var jwtObject = new JwtSecurityToken(
+                            issuer: _configuration["Jwt:Issuer"],
+                            audience: _configuration["Jwt:Audience"],
+                            claims: claims,
+                            expires: DateTime.Now.AddSeconds(300),
+                            signingCredentials: signigCredentials);
+
+                        var jwtString = new JwtSecurityTokenHandler()
+                            .WriteToken(jwtObject);
+
+                        return StatusCode(
+                            StatusCodes.Status200OK, jwtString);
+                    }
+                }
+                else
+                {
+                    var details = new ValidationProblemDetails(ModelState);
+                    details.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1";
+                    details.Status = StatusCodes.Status400BadRequest;
+                    
+                    return new BadRequestObjectResult(details);
+                }
+            }
+            catch (Exception e)
+            {
+                var exceptionDetails = new ProblemDetails();
+                exceptionDetails.Detail = e.Message;
+                exceptionDetails.Status = StatusCodes.Status401Unauthorized;
+                exceptionDetails.Type = "https://tools.ietf.org/html/rfc7235#section-6.6.1";
+
+                return StatusCode(
+                    StatusCodes.Status401Unauthorized,
+                    exceptionDetails);
+            }
         }
     }
 }
