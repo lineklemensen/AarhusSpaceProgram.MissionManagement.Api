@@ -29,4 +29,16 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         [Required]
         public string? Password { get; set; }
     }
+
+    public class CreateStaffWithUserDTO
+    {
+        [Required]
+        public string Role { get; set; } = null!;
+
+        [Required]
+        public string Name { get; set; } = null!;
+
+        [StringLength(50)]
+        public string EmailDomain { get; set; } = "asp.com";
+    }
 }
