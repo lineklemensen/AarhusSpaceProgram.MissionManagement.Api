@@ -34,6 +34,15 @@ builder.Services.AddCors(options => {
 
 builder.Services.AddControllers(options =>
 {
+    options.ModelBindingMessageProvider.SetValueIsInvalidAccessor(
+        (x) => $"The value '{x}' is invalid.");
+    options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor(
+        (x) => $"The fiels '{x}' must be a number.");
+    options.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor(
+        (x, y) => $"The value '{x}' is invalid for the field '{y}'.");
+    options.ModelBindingMessageProvider.SetMissingKeyOrValueAccessor(
+        () => "A value is required.");
+
     options.Filters.Add<AuditActionFilter>();
 });
 builder.Services.AddScoped<AarhusSpaceProgram.MissionManagement.Api.Logging.AuditActionFilter>();
@@ -79,6 +88,9 @@ builder.Services.AddAuthentication(options =>
                 builder.Configuration["Jwt:SigningKey"]))
     };
 });
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+    options.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
 
