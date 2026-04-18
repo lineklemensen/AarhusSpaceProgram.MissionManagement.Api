@@ -58,6 +58,43 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
                     if (result.Succeeded)
                     {
+                        dynamic staff = null;
+
+                        switch (input.Role)
+                        {
+                            case "Astronaut":
+                                staff = await _context.Astronauts
+                                    .FirstOrDefaultAsync(a => a.Id == input.StaffId);
+                                newUser.Astronaut = staff;
+                                break;
+
+                            case "Scientist":
+                                staff = await _context.Scientists
+                                    .FirstOrDefaultAsync(s => s.Id == input.StaffId);
+                                newUser.Scientist = staff;
+                                break;
+
+                            case "Manager":
+                                staff = await _context.Managers
+                                    .FirstOrDefaultAsync(m => m.Id == input.StaffId);
+                                newUser.Manager = staff;
+                                break;
+
+                            default:
+                                throw new Exception("Invalid role specified");
+                        }
+
+                        if (staff == null)
+                            throw new Exception(
+                                $"No {input.Role} found with ID {input.StaffId}.");
+
+                        staff.UserId = newUser.Id;
+                        staff.User = newUser;
+
+                        await _userManager.AddToRoleAsync(newUser, input.Role);
+
+                        await _context.SaveChangesAsync();
+
                         return StatusCode(201,
                             $"User '{newUser.UserName}' has been created");
                     }

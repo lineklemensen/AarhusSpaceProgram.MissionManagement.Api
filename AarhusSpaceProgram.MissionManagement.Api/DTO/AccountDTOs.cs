@@ -13,6 +13,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 
         [Required]
         public string? Password { get; set; }
+
+        [Required]
+        public int StaffId { get; set; }
+
+        [Required]
+        public string Role { get; set; } = null!;
     }
 
     public class LoginDTO
