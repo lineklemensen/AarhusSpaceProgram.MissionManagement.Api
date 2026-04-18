@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
+using AarhusSpaceProgram.MissionManagement.Api.Services;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -12,13 +13,17 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
     {
         private readonly MissionManagementDbContext _context;
 
+        private readonly StaffService _staffService;
+
         private readonly ILogger<AstronautsController> _logger;
 
         public AstronautsController(
             MissionManagementDbContext context,
+            StaffService staffService,
             ILogger<AstronautsController> logger)
         {
             _context = context;
+            _staffService = staffService;
             _logger = logger;
         }
 
@@ -36,62 +41,83 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> Post(CreateAstronautDTO dto)
         {
-            if (!Enum.TryParse<AstronautRank>(dto.Rank, out var rank))
-                return BadRequest($"Invalid rank: {dto.Rank}");
-
-            var astronaut = new Astronaut
+            try
             {
-                Name = dto.Name,
-                Rank = rank,
-                Paygrade = dto.Paygrade,
-                HoursInSimulation = dto.HoursInSimulation,
-                HoursInSpace = dto.HoursInSpace
-            };
+                if (!Enum.TryParse<AstronautRank>(dto.Rank, out var rank))
+                    return BadRequest($"Invalid rank: {dto.Rank}");
 
-            _context.Astronauts.Add(astronaut);
-            await _context.SaveChangesAsync();
-
-            var result = new AstronautListItemDTO
-            {
-                Id = astronaut.Id,
-                Name = astronaut.Name,
-                Rank = astronaut.Rank.ToString(),
-                Paygrade = astronaut.Paygrade,
-                HoursInSimulation = astronaut.HoursInSimulation,
-                HoursInSpace = astronaut.HoursInSpace
-            };
-
-            return Created(
-                Url.Action(
-                    action: nameof(GetById),
-                    controller: "Astronauts",
-                    values: new { id = astronaut.Id },
-                    protocol: Request.Scheme)!,
-
-                new RestDTO<AstronautListItemDTO>
+                var astronaut = new Astronaut
                 {
-                    Data = result,
-                    Links = new List<LinkDTO>
-                    {
-                        new LinkDTO(
-                            Url.Action(
-                                action: nameof(GetById),
-                                controller: "Astronauts",
-                                values: new { id = astronaut.Id },
-                                protocol: Request.Scheme)!,
-                            "self",
-                            "GET"),
+                    Name = dto.Name,
+                    Rank = rank,
+                    Paygrade = dto.Paygrade,
+                    HoursInSimulation = dto.HoursInSimulation,
+                    HoursInSpace = dto.HoursInSpace
+                };
 
-                        new LinkDTO(
-                            Url.Action(
-                                action: nameof(Get),
-                                controller: "Astronauts",
-                                values: null,
-                                protocol: Request.Scheme)!,
-                            "collection",
-                            "GET"),
+                // Add astronaut to the database
+                _context.Astronauts.Add(astronaut);
+
+                // Generate user for the astronaut
+                var userResult = await _staffService.CreateUser(
+                    new CreateUserDTO
+                    {
+                        Name = astronaut.Name,
+                        Role = "Astronaut"
                     }
-                });
+                );
+
+                // Connect user to astronaut
+                astronaut.UserId = userResult.Id;
+
+                await _context.SaveChangesAsync();
+
+                var result = new AstronautListItemDTO
+                {
+                    Id = astronaut.Id,
+                    Name = astronaut.Name,
+                    Rank = astronaut.Rank.ToString(),
+                    Paygrade = astronaut.Paygrade,
+                    HoursInSimulation = astronaut.HoursInSimulation,
+                    HoursInSpace = astronaut.HoursInSpace
+                };
+
+                return Created(
+                    Url.Action(
+                        action: nameof(GetById),
+                        controller: "Astronauts",
+                        values: new { id = astronaut.Id },
+                        protocol: Request.Scheme)!,
+
+                    new RestDTO<AstronautListItemDTO>
+                    {
+                        Data = result,
+                        Links = new List<LinkDTO>
+                        {
+                            new LinkDTO(
+                                Url.Action(
+                                    action: nameof(GetById),
+                                    controller: "Astronauts",
+                                    values: new { id = astronaut.Id },
+                                    protocol: Request.Scheme)!,
+                                "self",
+                                "GET"),
+
+                            new LinkDTO(
+                                Url.Action(
+                                    action: nameof(Get),
+                                    controller: "Astronauts",
+                                    values: null,
+                                    protocol: Request.Scheme)!,
+                                "collection",
+                                "GET"),
+                        }
+                    });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"An error occurred while creating the astronaut: {e.Message}");
+            }
         }
 
         // READ

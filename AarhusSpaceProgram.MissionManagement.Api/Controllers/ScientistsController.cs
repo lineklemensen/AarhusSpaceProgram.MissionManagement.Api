@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
+using AarhusSpaceProgram.MissionManagement.Api.Services;
 
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
@@ -12,13 +13,17 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
     {
         private readonly MissionManagementDbContext _context;
 
+        private readonly StaffService _staffService;
+
         private readonly ILogger<ScientistsController> _logger;
 
         public ScientistsController(
             MissionManagementDbContext context,
+            StaffService staffService,
             ILogger<ScientistsController> logger)
         {
             _context = context;
+            _staffService = staffService;
             _logger = logger;
         }
 
@@ -32,57 +37,78 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> Post(CreateScientistDTO dto)
         {
-            var scientist = new Scientist
+            try
             {
-                Name = dto.Name,
-                Title = dto.Title,
-                Specialty = dto.Specialty,
-                HireDate = dto.HireDate
-            };
-
-            _context.Scientists.Add(scientist);
-            await _context.SaveChangesAsync();
-
-            var result = new ScientistListItemDTO
-            {
-                Id = scientist.Id,
-                Name = scientist.Name,
-                Title = scientist.Title,
-                Specialty = scientist.Specialty,
-                HireDate = scientist.HireDate
-            };
-
-            return Created(
-                Url.Action(
-                    action: nameof(GetById),
-                    controller: "Scientists",
-                    values: new { id = scientist.Id },
-                    protocol: Request.Scheme)!,
-
-                new RestDTO<ScientistListItemDTO>
+                var scientist = new Scientist
                 {
-                    Data = result,
-                    Links = new List<LinkDTO>
-                    {
-                        new LinkDTO(
-                            Url.Action(
-                                action: nameof(GetById),
-                                controller: "Scientists",
-                                values: new { id = scientist.Id },
-                                protocol: Request.Scheme)!,
-                            "self",
-                            "GET"),
+                    Name = dto.Name,
+                    Title = dto.Title,
+                    Specialty = dto.Specialty,
+                    HireDate = dto.HireDate
+                };
 
-                        new LinkDTO(
-                            Url.Action(
-                                action: nameof(Get),
-                                controller: "Scientists",
-                                values: null,
-                                protocol: Request.Scheme)!,
-                            "collection",
-                            "GET"),
-                    }
-                });
+                // Add scientist to the database
+                _context.Scientists.Add(scientist);
+
+                // Generate user for the scientist
+                var userResult = await _staffService.CreateUser(
+                    new CreateUserDTO
+                    {
+                        Name = scientist.Name,
+                        Role = "Scientist"
+                    } 
+                );
+
+                // Connect user to scientist
+                scientist.UserId = userResult.Id;
+
+                await _context.SaveChangesAsync();
+
+                var result = new ScientistListItemDTO
+                {
+                    Id = scientist.Id,
+                    Name = scientist.Name,
+                    Title = scientist.Title,
+                    Specialty = scientist.Specialty,
+                    HireDate = scientist.HireDate
+                };
+
+                return Created(
+                    Url.Action(
+                        action: nameof(GetById),
+                        controller: "Scientists",
+                        values: new { id = scientist.Id },
+                        protocol: Request.Scheme)!,
+
+                    new RestDTO<ScientistListItemDTO>
+                    {
+                        Data = result,
+                        Links = new List<LinkDTO>
+                        {
+                            new LinkDTO(
+                                Url.Action(
+                                    action: nameof(GetById),
+                                    controller: "Scientists",
+                                    values: new { id = scientist.Id },
+                                    protocol: Request.Scheme)!,
+                                "self",
+                                "GET"),
+
+                            new LinkDTO(
+                                Url.Action(
+                                    action: nameof(Get),
+                                    controller: "Scientists",
+                                    values: null,
+                                    protocol: Request.Scheme)!,
+                                "collection",
+                                "GET"),
+                        }
+                    });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"An error occurred while creating the scientist: {e.Message}");
+            }
         }
 
         // READ

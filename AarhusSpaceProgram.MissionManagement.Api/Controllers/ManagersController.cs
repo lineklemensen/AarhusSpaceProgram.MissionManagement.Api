@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
+using AarhusSpaceProgram.MissionManagement.Api.Services;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -11,13 +12,17 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
     {
         private readonly MissionManagementDbContext _context;
 
+        private readonly StaffService _staffService;
+
         private readonly ILogger<ManagersController> _logger;
 
         public ManagersController(
             MissionManagementDbContext context,
+            StaffService staffService,
             ILogger<ManagersController> logger)
         {
             _context = context;
+            _staffService = staffService;
             _logger = logger;
         }
 
@@ -31,51 +36,72 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Post(CreateManagerDTO dto)
         {
-            var manager = new Manager
+            try
             {
-                Name = dto.Name
-            };
-
-            _context.Managers.Add(manager);
-            await _context.SaveChangesAsync();
-
-            var result = new ManagerListItemDTO
-            {
-                Id = manager.Id,
-                Name = manager.Name
-            };
-
-            return Created(
-                Url.Action(
-                    action: nameof(GetById),
-                    controller: "Managers",
-                    values: new { id = manager.Id },
-                    protocol: Request.Scheme)!,
-
-                new RestDTO<ManagerListItemDTO>
+                var manager = new Manager
                 {
-                    Data = result,
-                    Links = new List<LinkDTO>
-                    {
-                        new LinkDTO(
-                            Url.Action(
-                                action: nameof(GetById),
-                                controller: "Managers",
-                                values: new { id = manager.Id },
-                                protocol: Request.Scheme)!,
-                            "self",
-                            "GET"),
+                    Name = dto.Name
+                };
 
-                        new LinkDTO(
-                            Url.Action(
-                                action: nameof(Get),
-                                controller: "Managers",
-                                values: null,
-                                protocol: Request.Scheme)!,
-                            "collection",
-                            "GET"),
+                // Add manager to database
+                _context.Managers.Add(manager);
+
+                // Generate user for the manager
+                var userResult = await _staffService.CreateUser(
+                    new CreateUserDTO
+                    {
+                        Name = dto.Name,
+                        Role = "Manager"
                     }
-                });
+                );
+
+                // Connect user to manager
+                manager.UserId = userResult.Id;
+
+                await _context.SaveChangesAsync();
+
+                var result = new ManagerListItemDTO
+                {
+                    Id = manager.Id,
+                    Name = manager.Name
+                };
+
+                return Created(
+                    Url.Action(
+                        action: nameof(GetById),
+                        controller: "Managers",
+                        values: new { id = manager.Id },
+                        protocol: Request.Scheme)!,
+
+                    new RestDTO<ManagerListItemDTO>
+                    {
+                        Data = result,
+                        Links = new List<LinkDTO>
+                        {
+                            new LinkDTO(
+                                Url.Action(
+                                    action: nameof(GetById),
+                                    controller: "Managers",
+                                    values: new { id = manager.Id },
+                                    protocol: Request.Scheme)!,
+                                "self",
+                                "GET"),
+
+                            new LinkDTO(
+                                Url.Action(
+                                    action: nameof(Get),
+                                    controller: "Managers",
+                                    values: null,
+                                    protocol: Request.Scheme)!,
+                                "collection",
+                                "GET"),
+                        }
+                    });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"An error occurred while creating the manager: {e.Message}");
+            }
         }
 
         // READ

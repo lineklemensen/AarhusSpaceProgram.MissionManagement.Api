@@ -22,7 +22,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Services
             _userManager = userManager;
         }
 
-        public async Task<(string Id, string Email, string TemporaryPassword)> CreateStaffWithUser(CreateStaffWithUserDTO dto)
+        public async Task<(string Id, string Email, string TemporaryPassword)> CreateUser(CreateUserDTO dto)
         {
             // Validate role
             string prefix = dto.Role switch

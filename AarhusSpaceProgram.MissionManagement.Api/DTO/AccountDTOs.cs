@@ -2,6 +2,7 @@
 
 namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 {
+    // Manually register a new user (for testing purposes or in case of emergencies)
     public class RegisterDTO
     {
         [Required]
@@ -30,7 +31,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public string? Password { get; set; }
     }
 
-    public class CreateStaffWithUserDTO
+    // DTO for creating a new user automatically when a new staff member is added (without password, as it will be generated and sent to the user)
+    public class CreateUserDTO
     {
         [Required]
         public string Role { get; set; } = null!;
