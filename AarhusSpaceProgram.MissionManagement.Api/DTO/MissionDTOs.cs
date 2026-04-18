@@ -9,7 +9,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public string Name { get; set; } = null!;
 
         [Required]
-        public int ManagerId { get; set; }
+        public string ManagerId { get; set; } = null!;
 
         public DateOnly? LaunchDate { get; set; }
 

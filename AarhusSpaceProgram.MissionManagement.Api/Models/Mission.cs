@@ -28,7 +28,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public ICollection<MissionAstronautAssignment> AstronautAssignments { get; set; } = new List<MissionAstronautAssignment>();
         public ICollection<MissionScientistAssignment> ScientistAssignments { get; set; } = new List<MissionScientistAssignment>();
 
-        public int? ManagerId { get; set; }
+        public string? ManagerId { get; set; }
         public Manager? Manager { get; set; }
 
         public int? RocketId { get; set; }

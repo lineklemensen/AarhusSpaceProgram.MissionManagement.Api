@@ -127,9 +127,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id:int}", Name = "GetScientistById")]
+        [HttpGet("{id}", Name = "GetScientistById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> GetById(int id)
+        public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> GetById(string id)
         {
             var scientist = await _context.Scientists
                 .AsNoTracking()
@@ -171,9 +171,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [HttpPatch("{id:int}", Name = "UpdateScientist")]
+        [HttpPatch("{id}", Name = "UpdateScientist")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult> Patch(int id, UpdateScientistDTO dto)
+        public async Task<ActionResult> Patch(string id, UpdateScientistDTO dto)
         {
             var scientist = await _context.Scientists
                 .Where(s => s.Id == id)
@@ -225,9 +225,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id:int}", Name = "DeleteScientist")]
+        [HttpDelete("{id}", Name = "DeleteScientist")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(string id)
         {
             var scientist = await _context.Scientists
                 .Where(s => s.Id == id)

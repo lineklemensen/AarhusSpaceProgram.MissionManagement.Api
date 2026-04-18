@@ -12,7 +12,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
 
         [Key]
         [Required]
-        public int ScientistId { get; set; }
+        public string ScientistId { get; set; } = null!;
         public Scientist Scientist { get; set; } = null!;
     }
 }

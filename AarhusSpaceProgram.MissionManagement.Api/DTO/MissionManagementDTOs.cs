@@ -52,7 +52,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public sealed class AstronautAssignmentItemDTO
         {
             [Required]
-            public int AstronautId { get; set; }
+            public string AstronautId { get; set; } = null!;
         }
 
         public sealed class AssignAstronautsToMissionDTO
@@ -73,7 +73,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public sealed class ScientistAssignmentItemDTO
         {
             [Required]
-            public int ScientistId { get; set; }
+            public string ScientistId { get; set; } = null!;
         }
 
         public sealed class AssignScientistsToMissionDTO
@@ -117,7 +117,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
             public int MissionId { get; set; }
 
             [Required]
-            public int? ManagerId { get; set; }
+            public string? ManagerId { get; set; } = null!;
         }
 
         // Rocket

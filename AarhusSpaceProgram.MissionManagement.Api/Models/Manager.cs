@@ -8,7 +8,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
     {
         [Key]
         [Required]
-        public int Id { get; set; }
+        public string Id { get; set; } = null!;
 
         [Required]
         [MaxLength(200)]

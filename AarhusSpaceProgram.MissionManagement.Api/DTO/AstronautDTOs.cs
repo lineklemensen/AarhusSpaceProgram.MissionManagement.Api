@@ -22,7 +22,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 
     public sealed record AstronautListItemDTO
     {
-        public int Id { get; init; }
+        public string Id { get; init; } = null!;
 
         public string Name { get; init; } = null!;
 
@@ -37,7 +37,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 
     public record AstronautExperienceListItemDTO
     {
-        public int Id { get; init; }
+        public string Id { get; init; } = null!;
         public string Name { get; init; } = null!;
 
         public int HoursInSpace { get; init; }

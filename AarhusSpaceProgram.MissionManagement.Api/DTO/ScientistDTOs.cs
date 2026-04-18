@@ -22,7 +22,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
 
     public sealed record ScientistListItemDTO
     {
-        public int Id { get; init; }
+        public string Id { get; init; } = null!;
 
         public string Name { get; init; } = null!;
 

@@ -117,7 +117,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id:int}", Name = "GetManagerById")]
+        [HttpGet("{id}", Name = "GetManagerById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> GetById(int id)
         {
@@ -158,9 +158,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [HttpPut("{id:int}", Name = "UpdateManager")]
+        [HttpPut("{id}", Name = "UpdateManager")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(int id, UpdateManagerDTO dto)
+        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(string id, UpdateManagerDTO dto)
         {
             var manager = await _context.Managers
                 .Where(m => m.Id == id)
@@ -202,9 +202,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id:int}", Name = "DeleteManager")]
+        [HttpDelete("{id}", Name = "DeleteManager")]
         [ResponseCache(NoStore = true)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             var manager = await _context.Managers
                 .Where(m => m.Id == id)

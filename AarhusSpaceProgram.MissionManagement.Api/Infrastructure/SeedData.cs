@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AarhusSpaceProgram.MissionManagement.Api.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
 {
@@ -43,7 +44,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
             if (!await _context.Astronauts.AnyAsync())
             {
                 _context.Astronauts.AddRange(
-                    )
+                    );
             }
         }
     }

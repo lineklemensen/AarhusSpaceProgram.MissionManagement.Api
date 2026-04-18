@@ -140,9 +140,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </remarks> 
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id:int}", Name = "GetAstronautById")]
+        [HttpGet("{id}", Name = "GetAstronautById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> GetById(int id)
+        public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> GetById(string id)
         {
             var astronaut = await _context.Astronauts
                 .AsNoTracking()
@@ -230,9 +230,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [HttpPatch("{id:int}", Name = "UpdateAstronaut")]
+        [HttpPatch("{id}", Name = "UpdateAstronaut")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult> Patch(int id, UpdateAstronautDTO dto)
+        public async Task<ActionResult> Patch(string id, UpdateAstronautDTO dto)
         {
             var astronaut = await _context.Astronauts
                 .Where(a => a.Id == id)
@@ -319,9 +319,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </remarks>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id:int}", Name = "DeleteAstronaut")]
+        [HttpDelete("{id}", Name = "DeleteAstronaut")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(string id)
         {
             var astronaut = await _context.Astronauts
                 .Where(a => a.Id == id)
