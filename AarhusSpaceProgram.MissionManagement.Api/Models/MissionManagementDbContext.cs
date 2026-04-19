@@ -24,40 +24,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             {
                 entity.HasOne(a => a.User)
                     .WithOne(u => u.Astronaut)
-                    .HasForeignKey<Astronaut>(a => a.UserId);
+                    .HasForeignKey<Astronaut>(a => a.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.Property(a => a.Rank).HasConversion<string>();
-
-                entity.HasData(
-                    new Astronaut
-                    {
-                        Id = 1,
-                        Name = "Neil Legstrong",
-                        Rank = AstronautRank.Astronaut,
-                        Paygrade = "2-A",
-                        HoursInSimulation = 500,
-                        HoursInSpace = 100
-                    },
-                    new Astronaut
-                    {
-                        Id = 2,
-                        Name = "Buzz Lightyear",
-                        Rank = AstronautRank.Pilot,
-                        Paygrade = "3-A",
-                        HoursInSimulation = 600,
-                        HoursInSpace = 150
-                    },
-                    new Astronaut
-                    {
-                        Id = 3,
-                        Name = "Sally Ride",
-                        Rank = AstronautRank.MissionSpecialist,
-                        Paygrade = "3-A",
-                        HoursInSimulation = 700,
-                        HoursInSpace = 200
-                    }
-                );
-
             });
 
             // CelestialBody
@@ -71,33 +41,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     .WithMany(cb => cb.Children)
                     .HasForeignKey(cb => cb.ParentId)
                     .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasData(
-                    new CelestialBody
-                    {
-                        Id = 1,
-                        Name = "Earth",
-                        BodyType = CelestialBodyType.Planet,
-                        PlanetClass = PlanetClass.Rocky,
-                        DistanceValueToParentAU = 1.0
-                    },
-                    new CelestialBody
-                    {
-                        Id = 2,
-                        Name = "Moon",
-                        BodyType = CelestialBodyType.Moon,
-                        DistanceValueToParentAU = 0.00257,
-                        ParentId = 1
-                    },
-                    new CelestialBody
-                    {
-                        Id = 3,
-                        Name = "Mars",
-                        BodyType = CelestialBodyType.Planet,
-                        PlanetClass = PlanetClass.Rocky,
-                        DistanceValueToParentAU = 1.524
-                    }
-                );
             });
 
             // Launchpad
@@ -105,25 +48,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             {
                 entity.HasIndex(l => l.PadCode).IsUnique();
                 entity.Property(l => l.Status).HasConversion<string>();
-
-                entity.HasData(
-                    new Launchpad
-                    {
-                        Id = 1,
-                        PadCode = "LC-39A",
-                        Location = "Kennedy Space Center, Florida, USA",
-                        Status = LaunchpadStatus.Operational,
-                        MaxSupportedWeightKg = 63800
-                    },
-                    new Launchpad
-                    {
-                        Id= 2,
-                        PadCode = "SLC-41",
-                        Location = "Cape Canaveral Space Force Station, Florida, USA",
-                        Status = LaunchpadStatus.UnderMaintenance,
-                        MaxSupportedWeightKg = 17440
-                    }
-                );
             });
 
             // Manager
@@ -131,20 +55,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             {
                 entity.HasOne(m => m.User)
                     .WithOne(u => u.Manager)
-                    .HasForeignKey<Manager>(m => m.UserId);
-
-                entity.HasData(
-                    new Manager
-                    {
-                        Id = 1,
-                        Name = "Dean Kranz"
-                    },
-                    new Manager
-                    {
-                        Id = 2,
-                        Name = "Ellen Ripley"
-                    }
-                );
+                    .HasForeignKey<Manager>(m => m.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             //Mission
@@ -172,54 +84,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
 
                 entity.Property(m => m.Status).HasConversion<string>();
                 entity.Property(m => m.Type).HasConversion<string>();
-
-                entity.HasData(
-                    new Mission
-                    {
-                        Id = 1,
-                        Name = "Mars 2020",
-                        LaunchDate = new DateOnly(2020, 7, 30),
-                        DurationHours = 4872,
-                        Status = MissionStatus.Completed,
-                        Type = MissionType.Landing
-                    },
-                    new Mission
-                    {
-                        Id = 2,
-                        Name = "Artemis I",
-                        LaunchDate = new DateOnly(2022, 11, 16),
-                        DurationHours = 613,
-                        Status = MissionStatus.Completed,
-                        Type = MissionType.Orbit
-                    }
-                );
-            });
-
-            // Rocket
-            modelBuilder.Entity<Rocket>(entity =>
-            {
-                entity.HasData(
-                    new Rocket
-                    {
-                        Id = 1,
-                        Name = "Atlas V 541",
-                        PayloadCapacityKg = 17440,
-                        CrewCapacity = 0,
-                        NumberOfStages = 2,
-                        FuelCapacityKg = 284000,
-                        WeightKg = 49000
-                    },
-                    new Rocket
-                    {
-                        Id = 2,
-                        Name = "Space Launch System Block 1",
-                        PayloadCapacityKg = 95000,
-                        CrewCapacity = 4,
-                        NumberOfStages = 2,
-                        FuelCapacityKg = 2500000,
-                        WeightKg = 130000
-                    }
-                );
             });
 
             // Scientist
@@ -227,26 +91,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
             {
                 entity.HasOne(s => s.User)
                     .WithOne(u => u.Scientist)
-                    .HasForeignKey<Scientist>(s => s.UserId);
-
-                entity.HasData(
-                    new Scientist
-                    {
-                        Id = 1,
-                        Name = "Howard Wolowitz",
-                        Title = "Aerospace Engineer",
-                        Specialty = "Rocket Propulsion",
-                        HireDate = new DateTime(2010, 5, 1)
-                    },
-                    new Scientist
-                    {
-                        Id = 2,
-                        Name = "Werner von Schwartz",
-                        Title = "Astrophysicist",
-                        Specialty = "Planetary Science",
-                        HireDate = new DateTime(2012, 8, 15)
-                    }
-                );
+                    .HasForeignKey<Scientist>(s => s.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Junction entities
@@ -262,24 +108,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                 entity.HasOne(ma => ma.Astronaut)
                     .WithMany(a => a.MissionAssignments)
                     .HasForeignKey(ma => ma.AstronautId);
-
-                entity.HasData(
-                    new MissionAstronautAssignment
-                    {
-                        MissionId = 1,
-                        AstronautId = 1
-                    },
-                    new MissionAstronautAssignment
-                    {
-                        MissionId = 1,
-                        AstronautId = 2
-                    },
-                    new MissionAstronautAssignment
-                    {
-                        MissionId = 2,
-                        AstronautId = 3
-                    }
-                );
             });
 
             // MissionScientistAssignment
@@ -296,19 +124,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     .WithMany(s => s.MissionAssignments)
                     .HasForeignKey(ms => ms.ScientistId)
                     .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasData(
-                    new MissionScientistAssignment
-                    {
-                        MissionId = 1,
-                        ScientistId = 1
-                    },
-                    new MissionScientistAssignment
-                    {
-                        MissionId = 2,
-                        ScientistId = 2
-                    }
-                );
             });
         }
 

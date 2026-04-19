@@ -26,7 +26,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public DateTime HireDate { get; set; }
 
         // Navigation properties
-        public string? UserId { get; set; }
         public AspUser? User { get; set; }
         public ICollection<MissionScientistAssignment> MissionAssignments { get; set; } = new List<MissionScientistAssignment>();
     }
