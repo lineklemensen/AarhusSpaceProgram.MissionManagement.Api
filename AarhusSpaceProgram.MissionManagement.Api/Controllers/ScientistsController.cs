@@ -60,7 +60,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 );
 
                 // Connect user to scientist
-                scientist.UserId = userResult.Id;
+                scientist.Id = userResult.Id;
 
                 await _context.SaveChangesAsync();
 

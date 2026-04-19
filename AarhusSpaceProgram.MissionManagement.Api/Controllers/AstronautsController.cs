@@ -68,7 +68,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 );
 
                 // Connect user to astronaut
-                astronaut.UserId = userResult.Id;
+                astronaut.Id = userResult.Id;
 
                 await _context.SaveChangesAsync();
 

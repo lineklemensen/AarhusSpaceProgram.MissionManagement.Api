@@ -56,7 +56,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 );
 
                 // Connect user to manager
-                manager.UserId = userResult.Id;
+                manager.Id = userResult.Id;
 
                 await _context.SaveChangesAsync();
 
