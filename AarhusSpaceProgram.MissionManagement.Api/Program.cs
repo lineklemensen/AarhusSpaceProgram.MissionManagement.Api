@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using AarhusSpaceProgram.MissionManagement.Api.Services;
+using AarhusSpaceProgram.MissionManagement.Api.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +96,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true);
 
+builder.Services.AddScoped<SeedData>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -125,4 +128,10 @@ app.MapGet("/error",
 
 app.MapControllers();
 
-app.Run();
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<SeedData>();
+    await seeder.SeedAsync();
+}
+
+    app.Run();
