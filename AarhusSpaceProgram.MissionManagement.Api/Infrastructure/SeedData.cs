@@ -1,6 +1,5 @@
 ﻿using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
-using AarhusSpaceProgram.MissionManagement.Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +9,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<AspUser> _userManager;
-        private readonly StaffService _staffService;
         private readonly MissionManagementDbContext _context;
 
         public SeedData(
             RoleManager<IdentityRole> roleManager,
             UserManager<AspUser> userManager,
-            StaffService staffService,
             MissionManagementDbContext context)
         {
             _roleManager = roleManager;
             _userManager = userManager;
-            _staffService = staffService;
             _context = context;
         }
 
@@ -33,7 +29,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
             await SeedScientistsAsync();
             await SeedManagersAsync();
 
-
+            await SeedCelestialBodies();
+            await SeedLaunchpadsAsync();
+            await SeedRocketsAsync();
         }
 
         private async Task SeedRolesAsync()
@@ -269,7 +267,88 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
 
         private async Task SeedCelestialBodies()
         {
+            if (await _context.CelestialBodies.AnyAsync())
+                return;
 
+            var earth = new CelestialBody
+            {
+                Name = "Earth",
+                BodyType = CelestialBodyType.Planet,
+                PlanetClass = PlanetClass.Rocky,
+                DistanceValueToParentAU = 1.0
+            };
+
+            var mars = new CelestialBody
+            {
+                Name = "Mars",
+                BodyType = CelestialBodyType.Planet,
+                PlanetClass = PlanetClass.Rocky,
+                DistanceValueToParentAU = 1.524
+             };
+
+            _context.CelestialBodies.AddRange(earth, mars);
+            await _context.SaveChangesAsync();
+
+            var earthId = earth.Id;
+            
+            var moon = new CelestialBody
+            {
+                Name = "Moon",
+                BodyType = CelestialBodyType.Moon,
+                DistanceValueToParentAU = 0.00257,
+                ParentId = earthId
+             };
+
+             _context.CelestialBodies.Add(moon);
+             await _context.SaveChangesAsync();
+        }
+    
+        private async Task SeedLaunchpadsAsync()
+        {
+                if (await _context.Launchpads.AnyAsync())
+                    return;
+
+            var kennedy = new Launchpad
+            {
+                PadCode = "LC-39A",
+                Location = "Kennedy Space Center, Florida, USA",
+                Status = LaunchpadStatus.Operational,
+                MaxSupportedWeightKg = 63800
+            };
+
+            var capeCanaveral = new Launchpad
+            {
+                PadCode = "SLC-40",
+                Location = "Cape Canaveral Space Force Station, Florida, USA",
+                Status = LaunchpadStatus.Operational,
+                MaxSupportedWeightKg = 22800
+            };
+        }
+    
+        private async Task SeedRocketsAsync()
+        {
+                if (await _context.Rockets.AnyAsync())
+                    return;
+
+            var atlas = new Rocket
+            {
+                Name = "Atlas V 541",
+                PayloadCapacityKg = 17440,
+                CrewCapacity = 0,
+                NumberOfStages = 2,
+                FuelCapacityKg = 284000,
+                WeightKg = 49000
+            };
+
+            var slsblock = new Rocket
+            {
+                Name = "Space Launch System Block 1",
+                PayloadCapacityKg = 95000,
+                CrewCapacity = 4,
+                NumberOfStages = 2,
+                FuelCapacityKg = 733000,
+                WeightKg = 130000
+            };
         }
     }
 }
