@@ -39,7 +39,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-
+        /* TODO: Commented out in order to run a migration. Errors caused by staffId causing type conflicts.
         [HttpPost]
         // [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<ActionResult> Register(RegisterDTO input)
@@ -125,6 +125,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                     StatusCodes.Status500InternalServerError, exceptionDetails);
             }
         }
+        */
 
         [HttpPost]
         // [ResponseCache(CacheProfileName = "NoCache")]

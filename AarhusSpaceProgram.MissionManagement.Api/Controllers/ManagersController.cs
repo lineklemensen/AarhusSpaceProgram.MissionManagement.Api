@@ -145,7 +145,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <returns></returns>
         [HttpGet("{id}", Name = "GetManagerById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> GetById(int id)
+        public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> GetById(string id)
         {
             var manager = await _context.Managers
                 .AsNoTracking()

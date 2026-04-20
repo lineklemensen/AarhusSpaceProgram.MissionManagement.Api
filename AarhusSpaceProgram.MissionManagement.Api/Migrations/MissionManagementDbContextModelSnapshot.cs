@@ -89,11 +89,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.Astronaut", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("HoursInSimulation")
                         .HasColumnType("int");
@@ -115,45 +112,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
                     b.ToTable("Astronauts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            HoursInSimulation = 500,
-                            HoursInSpace = 100,
-                            Name = "Neil Legstrong",
-                            Paygrade = "2-A",
-                            Rank = "Astronaut"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            HoursInSimulation = 600,
-                            HoursInSpace = 150,
-                            Name = "Buzz Lightyear",
-                            Paygrade = "3-A",
-                            Rank = "Pilot"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            HoursInSimulation = 700,
-                            HoursInSpace = 200,
-                            Name = "Sally Ride",
-                            Paygrade = "3-A",
-                            Rank = "MissionSpecialist"
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.CelestialBody", b =>
@@ -187,32 +148,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("CelestialBodies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BodyType = "Planet",
-                            DistanceValueToParentAU = 1.0,
-                            Name = "Earth",
-                            PlanetClass = "Rocky"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BodyType = "Moon",
-                            DistanceValueToParentAU = 0.0025699999999999998,
-                            Name = "Moon",
-                            ParentId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BodyType = "Planet",
-                            DistanceValueToParentAU = 1.524,
-                            Name = "Mars",
-                            PlanetClass = "Rocky"
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.Launchpad", b =>
@@ -246,61 +181,21 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Launchpads");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Location = "Kennedy Space Center, Florida, USA",
-                            MaxSupportedWeightKg = 63800,
-                            PadCode = "LC-39A",
-                            Status = "Operational"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Location = "Cape Canaveral Space Force Station, Florida, USA",
-                            MaxSupportedWeightKg = 17440,
-                            PadCode = "SLC-41",
-                            Status = "UnderMaintenance"
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.Manager", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
                     b.ToTable("Managers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Dean Kranz"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Ellen Ripley"
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.Mission", b =>
@@ -323,8 +218,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                     b.Property<int?>("LaunchpadId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ManagerId")
-                        .HasColumnType("int");
+                    b.Property<string>("ManagerId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -353,26 +248,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                     b.HasIndex("RocketId");
 
                     b.ToTable("Missions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DurationHours = 4872,
-                            LaunchDate = new DateOnly(2020, 7, 30),
-                            Name = "Mars 2020",
-                            Status = "Completed",
-                            Type = "Landing"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DurationHours = 613,
-                            LaunchDate = new DateOnly(2022, 11, 16),
-                            Name = "Artemis I",
-                            Status = "Completed",
-                            Type = "Orbit"
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.MissionAstronautAssignment", b =>
@@ -380,31 +255,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                     b.Property<int>("MissionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AstronautId")
-                        .HasColumnType("int");
+                    b.Property<string>("AstronautId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("MissionId", "AstronautId");
 
                     b.HasIndex("AstronautId");
 
                     b.ToTable("MissionAstronautAssignments");
-
-                    b.HasData(
-                        new
-                        {
-                            MissionId = 1,
-                            AstronautId = 1
-                        },
-                        new
-                        {
-                            MissionId = 1,
-                            AstronautId = 2
-                        },
-                        new
-                        {
-                            MissionId = 2,
-                            AstronautId = 3
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.MissionScientistAssignment", b =>
@@ -412,26 +270,14 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                     b.Property<int>("MissionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ScientistId")
-                        .HasColumnType("int");
+                    b.Property<string>("ScientistId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("MissionId", "ScientistId");
 
                     b.HasIndex("ScientistId");
 
                     b.ToTable("MissionScientistAssignments");
-
-                    b.HasData(
-                        new
-                        {
-                            MissionId = 1,
-                            ScientistId = 1
-                        },
-                        new
-                        {
-                            MissionId = 2,
-                            ScientistId = 2
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.Rocket", b =>
@@ -465,37 +311,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Rockets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CrewCapacity = 0,
-                            FuelCapacityKg = 284000,
-                            Name = "Atlas V 541",
-                            NumberOfStages = 2,
-                            PayloadCapacityKg = 17440,
-                            WeightKg = 49000
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CrewCapacity = 4,
-                            FuelCapacityKg = 2500000,
-                            Name = "Space Launch System Block 1",
-                            NumberOfStages = 2,
-                            PayloadCapacityKg = 95000,
-                            WeightKg = 130000
-                        });
                 });
 
             modelBuilder.Entity("AarhusSpaceProgram.MissionManagement.Api.Models.Scientist", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("HireDate")
                         .HasColumnType("datetime2");
@@ -515,34 +336,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
                     b.ToTable("Scientists");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            HireDate = new DateTime(2010, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Howard Wolowitz",
-                            Specialty = "Rocket Propulsion",
-                            Title = "Aerospace Engineer"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            HireDate = new DateTime(2012, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Werner von Schwartz",
-                            Specialty = "Planetary Science",
-                            Title = "Astrophysicist"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -682,7 +478,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                 {
                     b.HasOne("AarhusSpaceProgram.MissionManagement.Api.Models.AspUser", "User")
                         .WithOne("Astronaut")
-                        .HasForeignKey("AarhusSpaceProgram.MissionManagement.Api.Models.Astronaut", "UserId");
+                        .HasForeignKey("AarhusSpaceProgram.MissionManagement.Api.Models.Astronaut", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -701,7 +499,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                 {
                     b.HasOne("AarhusSpaceProgram.MissionManagement.Api.Models.AspUser", "User")
                         .WithOne("Manager")
-                        .HasForeignKey("AarhusSpaceProgram.MissionManagement.Api.Models.Manager", "UserId");
+                        .HasForeignKey("AarhusSpaceProgram.MissionManagement.Api.Models.Manager", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -779,7 +579,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Migrations
                 {
                     b.HasOne("AarhusSpaceProgram.MissionManagement.Api.Models.AspUser", "User")
                         .WithOne("Scientist")
-                        .HasForeignKey("AarhusSpaceProgram.MissionManagement.Api.Models.Scientist", "UserId");
+                        .HasForeignKey("AarhusSpaceProgram.MissionManagement.Api.Models.Scientist", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

@@ -18,12 +18,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
             _userManager = userManager;
             _context = context;
         }
-
+        /*
         public async Task SeedAsync()
         {
             await SeedRolesAsync();
 
-            await SeedStaffAsync();
+            //await SeedStaffAsync();
         }
 
         private async Task SeedRolesAsync()
@@ -39,6 +39,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
             }
         }
 
+        /*
         private async Task SeedStaffAsync()
         {
             if (!await _context.Astronauts.AnyAsync())
@@ -47,5 +48,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
                     );
             }
         }
+        */
     }
 }
