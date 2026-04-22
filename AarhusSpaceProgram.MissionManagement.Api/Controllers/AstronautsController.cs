@@ -71,10 +71,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 await _context.SaveChangesAsync();
 
                 // Log user credentials to testUsers.txt for testing purposes
-                var repoRoot = AppContext.BaseDirectory;
+                var repoRoot = @"C:\Users\linen\AUBEng_offline\sw4\bad\AarhusSpaceProgram.MissionManagement.Api";
                 var testUsersFilePath = Path.Combine(repoRoot, "testUsers.txt");
                 await System.IO.File.AppendAllTextAsync(
-                    Path.GetFullPath(testUsersFilePath),
+                    testUsersFilePath,
                     $"{userResult.Id},{userResult.TemporaryPassword}{Environment.NewLine}");
 
                 var result = new AstronautListItemDTO
