@@ -29,9 +29,13 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
             await SeedScientistsAsync();
             await SeedManagersAsync();
 
+            await SeedMissionsAsync();
+
             await SeedCelestialBodies();
             await SeedLaunchpadsAsync();
             await SeedRocketsAsync();
+
+            await SeedJunctionsAsync();
         }
 
         private async Task SeedRolesAsync()
@@ -257,13 +261,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
             _context.Managers.AddRange(managers);
             await _context.SaveChangesAsync();
         }
- 
-        /* TODO: Add seeding for missions after seeding more basic entities
-        private async Task SeedMissionsAsync()
-        {
-
-        }
-        */
 
         private async Task SeedCelestialBodies()
         {
@@ -349,6 +346,100 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Infrastructure
                 FuelCapacityKg = 733000,
                 WeightKg = 130000
             };
+        }
+    
+        private async Task SeedMissionsAsync()
+        {
+            if (await _context.Missions.AnyAsync())
+                return;
+
+            var mars2020 = new Mission
+            {
+                Name = "Mars 2020",
+                LaunchDate = new DateOnly(2020, 7, 30),
+                DurationHours = 4872,
+                Status = MissionStatus.Completed,
+                Type = MissionType.Landing
+            };
+
+            var artemis = new Mission
+            {
+                Name = "Artemis I",
+                LaunchDate = new DateOnly(2022, 11, 16),
+                DurationHours = 672,
+                Status = MissionStatus.Completed,
+                Type = MissionType.Orbit
+            };
+
+             _context.Missions.AddRange(mars2020, artemis);
+             await _context.SaveChangesAsync();
+        }
+    
+        private async Task SeedJunctionsAsync()
+        {
+            if (await _context.MissionAstronautAssignments.AnyAsync() || await _context.MissionScientistAssignments.AnyAsync())
+                return;
+
+            var m1 = await _context.Missions.FirstOrDefaultAsync(m => m.Name == "Mars 2020");
+            var m2 = await _context.Missions.FirstOrDefaultAsync(m => m.Name == "Artemis I");
+
+            var a0 = await _context.Astronauts.FirstOrDefaultAsync(a => a.Name == "Neil Legstrong");
+            var a1 = await _context.Astronauts.FirstOrDefaultAsync(a => a.Name == "Buzz Lightyear");
+            var a2 = await _context.Astronauts.FirstOrDefaultAsync(a => a.Name == "Sally Ride");
+
+            var s0 = await _context.Scientists.FirstOrDefaultAsync(s => s.Name == "Howard Wolowitz");
+            var s1 = await _context.Scientists.FirstOrDefaultAsync(s => s.Name == "Werner von Schwartz");
+
+            var astronautAssignments = new List<MissionAstronautAssignment>()
+            {
+                // Mission 1 is assigned Neil and Buzz
+                new MissionAstronautAssignment
+                {
+                    MissionId = m1.Id,
+                    AstronautId = a0.Id
+                },
+
+                new MissionAstronautAssignment
+                {
+                    MissionId = m1.Id,
+                    AstronautId = a1.Id
+                },
+
+                // Mission 2 is assigned Sally
+                new MissionAstronautAssignment
+                {
+                    MissionId = m2.Id,
+                    AstronautId = a2.Id
+                }
+            };
+
+            var scientistAssignments = new List<MissionScientistAssignment>()
+            {
+                // Mission 1 is assigned Howard and Werner
+                new MissionScientistAssignment
+                {
+                    MissionId = m1.Id,
+                    ScientistId = s0.Id
+                },
+
+                new MissionScientistAssignment
+                {
+                    MissionId = m1.Id,
+                    ScientistId = s1.Id
+                },
+
+                // Mission 2 is assigned Werner
+                new MissionScientistAssignment
+                {
+                    MissionId = m2.Id,
+                    ScientistId = s1.Id
+                }
+            };
+
+            _context.MissionAstronautAssignments.AddRange(astronautAssignments);
+            _context.MissionScientistAssignments.AddRange(scientistAssignments);
+
+            await _context.SaveChangesAsync();
         }
     }
 }

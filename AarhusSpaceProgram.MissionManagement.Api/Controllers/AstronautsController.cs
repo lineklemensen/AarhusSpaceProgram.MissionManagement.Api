@@ -46,31 +46,36 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                 if (!Enum.TryParse<AstronautRank>(dto.Rank, out var rank))
                     return BadRequest($"Invalid rank: {dto.Rank}");
 
+                // Create user
+                var userResult = await _staffService.CreateUser(
+                    new CreateUserDTO
+                    {
+                        Name = dto.Name,
+                        Role = "Astronaut"
+                    }
+                );
+
+                // Create astronaut
                 var astronaut = new Astronaut
                 {
                     Name = dto.Name,
                     Rank = rank,
                     Paygrade = dto.Paygrade,
                     HoursInSimulation = dto.HoursInSimulation,
-                    HoursInSpace = dto.HoursInSpace
+                    HoursInSpace = dto.HoursInSpace,
+                    User = await _context.Users.FindAsync(userResult.Id)
                 };
 
                 // Add astronaut to the database
                 _context.Astronauts.Add(astronaut);
-
-                // Generate user for the astronaut
-                var userResult = await _staffService.CreateUser(
-                    new CreateUserDTO
-                    {
-                        Name = astronaut.Name,
-                        Role = "Astronaut"
-                    }
-                );
-
-                // Connect user to astronaut
-                astronaut.Id = userResult.Id;
-
                 await _context.SaveChangesAsync();
+
+                // Log user credentials to testUsers.txt for testing purposes
+                var repoRoot = AppContext.BaseDirectory;
+                var testUsersFilePath = Path.Combine(repoRoot, "testUsers.txt");
+                await System.IO.File.AppendAllTextAsync(
+                    Path.GetFullPath(testUsersFilePath),
+                    $"{userResult.Id},{userResult.TemporaryPassword}{Environment.NewLine}");
 
                 var result = new AstronautListItemDTO
                 {
