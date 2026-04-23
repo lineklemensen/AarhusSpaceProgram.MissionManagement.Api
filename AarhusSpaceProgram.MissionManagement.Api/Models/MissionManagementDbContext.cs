@@ -178,6 +178,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         // DbSets for primary entities
         public DbSet<Astronaut> Astronauts => Set<Astronaut>();
         public DbSet<CelestialBody> CelestialBodies => Set<CelestialBody>();
+        public DbSet<Experiment> Experiments => Set<Experiment>();
         public DbSet<Launchpad> Launchpads => Set<Launchpad>();
         public DbSet<Manager> Managers => Set<Manager>();
         public DbSet<Mission> Missions => Set<Mission>();
@@ -187,5 +188,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         // DbSets for junction entities
         public DbSet<MissionAstronautAssignment> MissionAstronautAssignments => Set<MissionAstronautAssignment>();
         public DbSet<MissionScientistAssignment> MissionScientistAssignments => Set<MissionScientistAssignment>();
+        public DbSet<ExperimentScientistAssignment> ExperimentScientistAssignments => Set<ExperimentScientistAssignment>();
+        public DbSet<ExperimentAstronautAssignment> ExperimentAstronautAssignments => Set<ExperimentAstronautAssignment>();
+        public DbSet<ExperimentsOnMissions> ExperimentsOnMissions => Set<ExperimentsOnMissions>();
     }
 }
