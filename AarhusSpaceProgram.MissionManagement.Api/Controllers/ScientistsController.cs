@@ -37,34 +37,45 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [HttpPost(Name = "CreateScientist")]
         [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> Post(CreateScientistDTO dto)
+        public async Task<ActionResult<RestDTO<ScientistListItemDTO>>> Post([FromBody] CreateScientistDTO dto)
         {
             try
             {
+                if (dto == null)
+                {
+                    _logger.LogError("CreateScientistDTO is null. Check request body and Content-Type header.");
+                    return BadRequest("Scientist data is required.");
+                }
+
+                // Crease user
+                var userResult = await _staffService.CreateUser(
+                    new CreateUserDTO
+                    {
+                        Name = dto.Name,
+                        Role = "Scientist"
+                    }
+                );
+
+                // Create scientist
                 var scientist = new Scientist
                 {
                     Name = dto.Name,
                     Title = dto.Title,
                     Specialty = dto.Specialty,
-                    HireDate = dto.HireDate
+                    HireDate = dto.HireDate,
+                    User = await _context.Users.FindAsync(userResult.Id)
                 };
 
                 // Add scientist to the database
                 _context.Scientists.Add(scientist);
-
-                // Generate user for the scientist
-                var userResult = await _staffService.CreateUser(
-                    new CreateUserDTO
-                    {
-                        Name = scientist.Name,
-                        Role = "Scientist"
-                    } 
-                );
-
-                // Connect user to scientist
-                scientist.Id = userResult.Id;
-
                 await _context.SaveChangesAsync();
+
+                // Log user credentials to testUsers.txt for testing purposes
+                var repoRoot = @"C:\Users\linen\AUBEng_offline\sw4\bad\AarhusSpaceProgram.MissionManagement.Api";
+                var testUsersFilePath = Path.Combine(repoRoot, "testUsers.txt");
+                await System.IO.File.AppendAllTextAsync(
+                    testUsersFilePath,
+                    $"{userResult.Id},{userResult.TemporaryPassword}{Environment.NewLine}");
 
                 var result = new ScientistListItemDTO
                 {

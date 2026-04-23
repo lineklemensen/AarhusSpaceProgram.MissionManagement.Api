@@ -154,6 +154,12 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                         claims.Add(new Claim(
                             ClaimTypes.Name, user.UserName));
 
+                        var roles = await _userManager.GetRolesAsync(user);
+                        foreach (var role in roles)
+                        {
+                            claims.Add(new Claim(ClaimTypes.Role, role));
+                        }
+
                         var jwtObject = new JwtSecurityToken(
                             issuer: _configuration["Jwt:Issuer"],
                             audience: _configuration["Jwt:Audience"],

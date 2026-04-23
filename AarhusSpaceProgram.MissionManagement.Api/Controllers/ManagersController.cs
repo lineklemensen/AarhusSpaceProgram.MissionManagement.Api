@@ -40,15 +40,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         {
             try
             {
-                var manager = new Manager
-                {
-                    Name = dto.Name
-                };
-
-                // Add manager to database
-                _context.Managers.Add(manager);
-
-                // Generate user for the manager
+                // Create user
                 var userResult = await _staffService.CreateUser(
                     new CreateUserDTO
                     {
@@ -57,10 +49,22 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                     }
                 );
 
-                // Connect user to manager
-                manager.Id = userResult.Id;
+                // Create manager
+                var manager = new Manager
+                {
+                    Name = dto.Name,
+                    User = await _context.Users.FindAsync(userResult.Id)
+                };
 
+                // Add manager to database
+                _context.Managers.Add(manager);
                 await _context.SaveChangesAsync();
+
+                var repoRoot = @"C:\Users\linen\AUBEng_offline\sw4\bad\AarhusSpaceProgram.MissionManagement.Api";
+                var testUsersFilePath = Path.Combine(repoRoot, "testUsers.txt");
+                await System.IO.File.AppendAllTextAsync(
+                    testUsersFilePath,
+                    $"{userResult.Id},{userResult.TemporaryPassword}{Environment.NewLine}");
 
                 var result = new ManagerListItemDTO
                 {
