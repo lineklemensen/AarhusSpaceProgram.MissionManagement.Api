@@ -28,5 +28,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         // Navigation properties
         public AspUser? User { get; set; }
         public ICollection<MissionScientistAssignment> MissionAssignments { get; set; } = new List<MissionScientistAssignment>();
+
+        public ICollection<ExperimentScientistAssignment> ExperimentAssignments { get; set; } = new List<ExperimentScientistAssignment>();
     }
 }

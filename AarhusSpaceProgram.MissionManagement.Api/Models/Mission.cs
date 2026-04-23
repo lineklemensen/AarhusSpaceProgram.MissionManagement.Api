@@ -39,5 +39,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
 
         public int? CelestialBodyId { get; set; }
         public CelestialBody? TargetBody { get; set; }
+
+        public ICollection<ExperimentsOnMissions> Experiments { get; set; } = new List<ExperimentsOnMissions>();
     }
 }

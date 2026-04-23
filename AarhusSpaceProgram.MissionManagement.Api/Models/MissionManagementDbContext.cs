@@ -125,6 +125,54 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
                     .HasForeignKey(ms => ms.ScientistId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            // ExperimentScientistAssignment
+            modelBuilder.Entity<ExperimentScientistAssignment>(entity =>
+            {
+                entity.HasKey(es => new { es.ExperimentId, es.ScientistId });
+
+                entity.HasOne(es => es.Experiment)
+                    .WithMany(e => e.ScientistAssignments)
+                    .HasForeignKey(es => es.ExperimentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(es => es.Scientist)
+                    .WithMany(s => s.ExperimentAssignments)
+                    .HasForeignKey(es => es.ScientistId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // ExperimentAstronautAssignment
+            modelBuilder.Entity<ExperimentAstronautAssignment>(entity =>
+            {
+                entity.HasKey(ea => new { ea.ExperimentId, ea.AstronautId });
+
+                entity.HasOne(ea => ea.Experiment)
+                    .WithMany(e => e.AstronautAssignments)
+                    .HasForeignKey(ea => ea.ExperimentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ea => ea.Astronaut)
+                    .WithMany(a => a.ExperimentAssignments)
+                    .HasForeignKey(ea => ea.AstronautId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            //ExperimentsOnMissions
+            modelBuilder.Entity<ExperimentsOnMissions>(entity =>
+            {
+                entity.HasKey(em => new { em.MissionId, em.ExperimentId });
+
+                entity.HasOne(em => em.Mission)
+                    .WithMany(m => m.Experiments)
+                    .HasForeignKey(em => em.MissionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(em => em.Experiment)
+                    .WithMany(e => e.Missions)
+                    .HasForeignKey(em => em.ExperimentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
 
         // DbSets for primary entities

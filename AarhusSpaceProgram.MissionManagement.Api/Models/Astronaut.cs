@@ -32,5 +32,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Models
         public AspUser? User { get; set; }
 
         public ICollection<MissionAstronautAssignment> MissionAssignments { get; set; } = new List<MissionAstronautAssignment>();
+
+        public ICollection<ExperimentAstronautAssignment> ExperimentAssignments { get; set; } = new List<ExperimentAstronautAssignment>();
     }
 }

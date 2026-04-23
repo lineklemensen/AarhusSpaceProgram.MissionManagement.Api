@@ -41,11 +41,8 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         {
             try
             {
-                if (dto == null)
-                {
-                    _logger.LogError("CreateScientistDTO is null. Check request body and Content-Type header.");
-                    return BadRequest("Scientist data is required.");
-                }
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
                 // Crease user
                 var userResult = await _staffService.CreateUser(
