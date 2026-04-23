@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AarhusSpaceProgram.MissionManagement.Api.DTO;
+﻿using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -33,6 +34,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost(Name = "CreateCelestialBody")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<CelestialBodyListItemDTO>>> Post(CreateCelestialBodyDTO dto)
         {
@@ -127,6 +129,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetCelestialBodies")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<CelestialBodyListItemDTO[]>> Get()
         {
@@ -166,6 +169,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetCelestialBodyById")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<CelestialBodyListItemDTO>>> GetById(int id)
         {
@@ -214,6 +218,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateCelestialBody")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<CelestialBodyListItemDTO>>> Patch(int id, UpdateCelestialBodyDTO dto)
         {

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using AarhusSpaceProgram.MissionManagement.Api.Services;
 using AarhusSpaceProgram.MissionManagement.Api.Infrastructure;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,7 @@ builder.Services.AddControllers(options =>
 builder.Services.AddScoped<AarhusSpaceProgram.MissionManagement.Api.Logging.AuditActionFilter>();
 
 builder.Services.AddScoped<StaffService>();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

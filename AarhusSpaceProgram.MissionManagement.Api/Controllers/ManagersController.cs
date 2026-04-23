@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AarhusSpaceProgram.MissionManagement.Api.DTO;
+﻿using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -33,6 +34,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost(Name = "CreateManager")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Post(CreateManagerDTO dto)
         {
@@ -110,6 +112,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetManagers")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<ManagerListItemDTO[]>> Get()
         {
@@ -144,6 +147,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}", Name = "GetManagerById")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> GetById(string id)
         {
@@ -185,6 +189,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPut("{id}", Name = "UpdateManager")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<ManagerListItemDTO>>> Put(string id, UpdateManagerDTO dto)
         {
@@ -229,6 +234,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}", Name = "DeleteManager")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<IActionResult> Delete(string id)
         {

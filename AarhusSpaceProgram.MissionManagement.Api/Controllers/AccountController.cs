@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -128,6 +129,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         */
 
         [HttpPost]
+        [AllowAnonymous]
         // [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<ActionResult> Login(LoginDTO input)
         {

@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AarhusSpaceProgram.MissionManagement.Api.DTO;
+﻿using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -28,6 +29,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost(Name = "CreateRocket")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<RocketListItemDTO>>> Post(CreateRocketDTO dto)
         {
@@ -103,6 +105,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetRockets")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<RocketListItemDTO[]>> Get()
         {
@@ -142,6 +145,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetRocketById")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<RocketListItemDTO>>> GetById(int id)
         {
@@ -188,6 +192,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateRocket")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(int id, UpdateRocketDTO dto)
         {
@@ -273,6 +278,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id:int}", Name = "DeleteRocket")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)
         {

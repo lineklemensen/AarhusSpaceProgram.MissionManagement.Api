@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AarhusSpaceProgram.MissionManagement.Api.DTO;
+﻿using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -29,6 +30,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost(Name = "CreateLaunchpad")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> Post(CreateLaunchpadDTO dto)
         {
@@ -94,6 +96,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetLaunchpads")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<LaunchpadListItemDTO[]>> Get()
         {
@@ -131,6 +134,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetLaunchpadById")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> GetById(int id)
         {
@@ -175,6 +179,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPatch("{id:int}", Name = "UpdateLaunchpad")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<LaunchpadListItemDTO>>> Patch(int id, UpdateLaunchpadDTO dto)
         {
@@ -240,6 +245,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id:int}", Name = "DeleteLaunchpad")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(int id)
         {

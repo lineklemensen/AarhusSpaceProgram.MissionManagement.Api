@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AarhusSpaceProgram.MissionManagement.Api.DTO;
+﻿using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 using AarhusSpaceProgram.MissionManagement.Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -38,6 +39,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost(Name = "CreateAstronaut")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> Post(CreateAstronautDTO dto)
         {
@@ -131,6 +133,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetAstronauts")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<AstronautListItemDTO[]>> Get()
         {
@@ -172,6 +175,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}", Name = "GetAstronautById")]
+        [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<AstronautListItemDTO>>> GetById(string id)
         {
@@ -218,6 +222,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </remarks>
         /// <returns></returns>
         [HttpGet("experience", Name = "GetAstronautsByExperience")]
+        [Authorize]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<AstronautExperienceListItemDTO>>> GetByExperience()
         {
@@ -262,6 +267,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPatch("{id}", Name = "UpdateAstronaut")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Patch(string id, UpdateAstronautDTO dto)
         {
@@ -351,6 +357,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}", Name = "DeleteAstronaut")]
+        [Authorize(Roles = "Manager")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult> Delete(string id)
         {

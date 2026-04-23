@@ -4,6 +4,7 @@ using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 using AarhusSpaceProgram.MissionManagement.Api.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -29,6 +30,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Manager")]
         [HttpPost(Name = "CreateMission")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Post(CreateMissionDTO dto)
@@ -113,6 +115,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// List all missions (simple)
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpGet(Name = "GetMissions")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<MissionSimpleListItemDTO[]>> Get()
@@ -148,6 +151,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpGet("{id:int}", Name = "GetMissionById")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> GetById(int id)
@@ -201,6 +205,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Manager")]
         [HttpPatch("{id:int}", Name = "UpdateMission")]
         [ResponseCache(NoStore = true)]
         public async Task<ActionResult<RestDTO<MissionListItemDTO>>> Patch(int id, UpdateMissionDTO dto)
@@ -323,6 +328,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Manager")]
         [HttpDelete("{id:int}", Name = "DeleteMission")]
         [ResponseCache(NoStore = true)]
         public async Task<IActionResult> Delete(int id)
