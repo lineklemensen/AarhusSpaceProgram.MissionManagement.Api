@@ -53,7 +53,25 @@ builder.Services.AddScoped<AarhusSpaceProgram.MissionManagement.Api.Logging.Audi
 builder.Services.AddScoped<StaffService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, CancellationToken) =>
+    {
+        document.Components ??= new();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter your token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "bearer"
+        });
+
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddDbContext<MissionManagementDbContext>(options =>
     options.UseSqlServer(
