@@ -8,7 +8,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ExperimentsController : Controller
+    public class ExperimentsController : ControllerBase
     {
         private readonly MissionManagementDbContext _context;
 
@@ -26,7 +26,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [HttpPost(Name = "CreateExperiment")]
         [Authorize(Roles = "Manager, Scientist")]
         [ResponseCache(NoStore = true)]
-        public async Task<ActionResult<RestDTO<CreateExperimentDTO>>> Post(CreateExperimentDTO dto)
+        public async Task<ActionResult<RestDTO<ExperimentListItemDTO>>> Post(CreateExperimentDTO dto)
         {
             try
             {
@@ -74,9 +74,10 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                                 Url.Action(
                                     action: nameof(Get),
                                     controller: "Experiments",
+                                    values: null,
                                     protocol: Request.Scheme)!,
                                 "collection",
-                                "GET")
+                                "GET"),
                         }
                     });
             }
@@ -90,9 +91,9 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [HttpGet(Name = "GetExperiments")]
         [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<ActionResult<RestDTO<List<ExperimentListItemDTO>>>> Get()
+        public async Task<RestDTO<ExperimentListItemDTO[]>> Get()
         {
-            var experiments = await _context.Experiments
+            var experiment = _context.Experiments
                 .AsNoTracking()
                 .Select(e => new ExperimentListItemDTO
                 {
@@ -101,10 +102,26 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                     Description = e.Description,
                     CreationDate = e.CreationDate
                 });
+
+            return new RestDTO<ExperimentListItemDTO[]>
+            {
+                Data = await experiment.ToArrayAsync(),
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(Get),
+                            controller: "Experiments",
+                            values: null,
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            };
         }
 
 
-        [HttpGet("{id}", Name = "GetExperimentById")]
+        [HttpGet("{id:int}", Name = "GetExperimentById")]
         [Authorize]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<ActionResult<RestDTO<ExperimentListItemDTO>>> GetById(int id)
@@ -141,5 +158,69 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             });
         }
 
+        // UPDATE
+        [HttpPatch("{id:int}", Name = "UpdateExperiment")]
+        [Authorize(Roles = "Manager, Scientist")]
+        [ResponseCache(NoStore = true)]
+        public async Task<ActionResult<RestDTO<ExperimentListItemDTO>>> Patch(int id, UpdateExperimentDTO dto)
+        {
+            var experiment = await _context.Experiments
+                .Where(e => e.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (experiment == null)
+                return NotFound();
+
+            if (dto.Name != null)
+                experiment.Name = dto.Name;
+
+            if (dto.Description != null)
+                experiment.Description = dto.Description;
+
+            await _context.SaveChangesAsync();
+
+            var result = new ExperimentListItemDTO
+            {
+                Id = experiment.Id,
+                Name = experiment.Name,
+                Description = experiment.Description,
+                CreationDate = experiment.CreationDate
+            };
+
+            return Ok(new RestDTO<ExperimentListItemDTO>
+            {
+                Data = result,
+                Links = new List<LinkDTO>
+                {
+                    new LinkDTO(
+                        Url.Action(
+                            action: nameof(GetById),
+                            controller: "Experiments",
+                            values: new { id = experiment.Id },
+                            protocol: Request.Scheme)!,
+                        "self",
+                        "GET"),
+                }
+            });
+        }
+
+        // DELETE
+        [HttpDelete("{id:int}", Name = "DeleteExperiment")]
+        [Authorize(Roles = "Manager, Scientist")]
+        [ResponseCache(NoStore = true)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var experiment = await _context.Experiments
+                .Where(e => e.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (experiment == null)
+                return NotFound();
+
+            _context.Experiments.Remove(experiment);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
