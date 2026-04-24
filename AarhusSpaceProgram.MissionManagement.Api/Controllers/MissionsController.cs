@@ -4,6 +4,7 @@ using AarhusSpaceProgram.MissionManagement.Api.DTO;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
 using AarhusSpaceProgram.MissionManagement.Api.Logging;
+using AarhusSpaceProgram.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
@@ -118,7 +119,7 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [AllowAnonymous]
         [HttpGet(Name = "GetMissions")]
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
-        public async Task<RestDTO<MissionSimpleListItemDTO[]>> Get()
+        public async Task<RestDTO<MissionSimpleListItemDTO[]>> Get([FromQuery] string? status = null)
         {
             var mission = _context.Missions
                 .AsNoTracking()

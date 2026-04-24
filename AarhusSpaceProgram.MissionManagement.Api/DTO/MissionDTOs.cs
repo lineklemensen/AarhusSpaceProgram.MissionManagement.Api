@@ -21,15 +21,6 @@ namespace AarhusSpaceProgram.MissionManagement.Api.DTO
         public string Type { get; set; } = null!;
     }
 
-    public sealed record MissionSimpleListItemDTO
-    {
-        public int Id { get; init; }
-
-        public string Name { get; init; } = null!;
-
-        public string Status { get; init; } = null!;
-    }
-
     public sealed record MissionListItemDTO
     {
         public int Id { get; init; }

@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="AarhusSpaceProgram.MissionManagement.Api/AarhusSpaceProgram.MissionManagement.Api.csproj" />
+  <Project Path="AarhusSpaceProgram.Shared/AarhusSpaceProgram.Shared.csproj" />
+  <Project Path="MissionLogGeneratorService/MissionLogGeneratorService.csproj" />
 </Solution>
