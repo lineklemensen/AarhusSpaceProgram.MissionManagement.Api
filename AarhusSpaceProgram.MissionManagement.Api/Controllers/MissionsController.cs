@@ -121,18 +121,27 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
         [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
         public async Task<RestDTO<MissionSimpleListItemDTO[]>> Get([FromQuery] string? status = null)
         {
-            var mission = _context.Missions
-                .AsNoTracking()
+            var query = _context.Missions
+                .AsNoTracking();
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                var statusLower = status.ToLower();
+                query = query.Where(m => m.Status.ToString().ToLower().Contains(statusLower));
+            }
+
+            var mission = await query
                 .Select(m => new MissionSimpleListItemDTO
                 {
                     Id = m.Id,
                     Name = m.Name,
                     Status = m.Status.ToString()
-                });
+                })
+                .ToListAsync();
 
             return new RestDTO<MissionSimpleListItemDTO[]>
             {
-                Data = await mission.ToArrayAsync(),
+                Data = mission.ToArray(),
                 Links = new List<LinkDTO>
                 {
                     new LinkDTO(
