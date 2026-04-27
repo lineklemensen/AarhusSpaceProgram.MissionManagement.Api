@@ -124,10 +124,11 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
             var query = _context.Missions
                 .AsNoTracking();
 
-            if (!string.IsNullOrEmpty(status))
+            _logger.LogInformation("Filtering missions by status: {Status}", status);
+
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<MissionStatus>(status, true, out var parsedStatus))
             {
-                var statusLower = status.ToLower();
-                query = query.Where(m => m.Status.ToString().ToLower().Contains(statusLower));
+                query = query.Where(m => m.Status == parsedStatus);
             }
 
             var mission = await query

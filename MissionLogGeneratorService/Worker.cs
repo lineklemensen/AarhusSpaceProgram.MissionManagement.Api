@@ -24,7 +24,7 @@ public class Worker : BackgroundService
         _apiBaseUrl = config["AspMissionManagementApiBaseUrl"] 
             ?? throw new Exception("API base URL missing");
         var mongoUrl = config["MongoConnectionString"] 
-            ?? "Mongodb://localhost:27017";
+            ?? "mongodb://localhost:27017";
         var db = new MongoClient(mongoUrl).GetDatabase(config["MongoDatabaseName"]);
         _logs = db.GetCollection<MissionLog>("MissionLogs");
     }
@@ -46,9 +46,15 @@ public class Worker : BackgroundService
                 {
                     var json = await resp.Content.ReadAsStringAsync(stoppingToken);
 
-                    var wrapper = System.Text.Json.JsonSerializer.Deserialize<MissionListResponseDTO>(json);
+                    _logger.LogInformation("Raw JSON from API: {Json}", json);
 
-                    missions = wrapper?.Data ?? new List<MissionSimpleListItemDTO>();
+                    var wrapper = System.Text.Json.JsonSerializer.Deserialize<RestDTO<MissionSimpleListItemDTO[]>>(
+                        json,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    missions = wrapper?.Data?.ToList() ?? new List<MissionSimpleListItemDTO>();
+
+                    _logger.LogInformation("Fetched {Count} active missions", missions.Count);
                 }
                 else
                 {

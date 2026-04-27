@@ -1,4 +1,4 @@
-﻿namespace AarhusSpaceProgram.MissionManagement.Api.DTO
+﻿namespace AarhusSpaceProgram.Shared.DTOs
 {
     public class RestDTO<T>
     {
