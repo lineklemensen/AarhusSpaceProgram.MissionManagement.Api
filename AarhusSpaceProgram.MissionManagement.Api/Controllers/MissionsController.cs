@@ -1,11 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using AarhusSpaceProgram.MissionManagement.Api.DTO;
+using AarhusSpaceProgram.MissionManagement.Api.Logging;
 using AarhusSpaceProgram.MissionManagement.Api.Models;
 using AarhusSpaceProgram.MissionManagement.Api.Models.Enums;
-using AarhusSpaceProgram.MissionManagement.Api.Logging;
 using AarhusSpaceProgram.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 {
@@ -17,12 +18,16 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
 
         private readonly ILogger<MissionsController> _logger;
 
+        private readonly IMongoCollection<MissionLogDTO> _missionLogs;
+
         public MissionsController(
             MissionManagementDbContext context, 
-            ILogger<MissionsController> logger)
+            ILogger<MissionsController> logger,
+            IMongoCollection<MissionLogDTO> missionLogs)
         {
             _context = context;
             _logger = logger;
+            _missionLogs = missionLogs;
         }
 
         // CREATE
@@ -200,6 +205,15 @@ namespace AarhusSpaceProgram.MissionManagement.Api.Controllers
                         "GET"),
                 }
             });
+        }
+
+        [HttpGet("{id}/logs")]
+        public async Task<ActionResult<RestDTO<MissionLogDTO>>> GetMissionLogs(int id)
+        {
+            var filter = Builders<MissionLogDTO>.Filter.Eq(log => log.MissionId, id);
+            var logs = await _missionLogs.Find(filter).ToListAsync();
+
+            return Ok(logs);
         }
 
         // UPDATE

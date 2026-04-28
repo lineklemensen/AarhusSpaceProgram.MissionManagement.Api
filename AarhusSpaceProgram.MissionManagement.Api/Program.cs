@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using AarhusSpaceProgram.MissionManagement.Api.Services;
 using AarhusSpaceProgram.MissionManagement.Api.Infrastructure;
 using Microsoft.OpenApi;
+using MongoDB.Driver;
+using AarhusSpaceProgram.Shared.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +79,20 @@ builder.Services.AddDbContext<MissionManagementDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"))
     );
+
+builder.Services.AddSingleton<IMongoCollection<MissionLogDTO>>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    var connectionString = config["Mongo:ConnectionString"];
+    var databaseName = config["Mongo:DatabaseName"];
+    var collectionName = config["Mongo:MissionLogsCollectionName"];
+
+    var client = new MongoClient(connectionString);
+    var db = client.GetDatabase(databaseName);
+
+    return db.GetCollection<MissionLogDTO>(collectionName);
+});
 
 // Identity service configuration
 builder.Services.AddIdentity<AspUser, IdentityRole>(options =>
