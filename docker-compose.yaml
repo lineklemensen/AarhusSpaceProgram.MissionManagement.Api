@@ -7,6 +7,28 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
+    volumes:
+      - mssqldata:/var/opt/mssql  # BRUG Docker-managed named volume!
+      - ./create-db-user.sql:/init/create-db-user.sql
+      - ./run-init-sql.sh:/init/run-init-sql.sh
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_PASSWORD}", "-Q", "select 1"]
+      interval: 10s
+      start_period: 10s
+      retries: 10
+
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    entrypoint: ["/init/run-init-sql.sh"]
+    environment:
+      SA_PASSWORD: ${SQL_PASSWORD}
+    volumes:
+      - ./create-db-user.sql:/init/create-db-user.sql
+      - ./run-init-sql.sh:/init/run-init-sql.sh
+    restart: "no"
 
   mongodb:
     image: mongo:7
@@ -17,22 +39,27 @@ services:
 
   api:
     build:
-      context: ./AarhusSpaceProgram.MissionManagement.Api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: AarhusSpaceProgram.MissionManagement.Api/Dockerfile
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MissionManagementASP;User=sa;Password=${SQL_PASSWORD};
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MissionManagementASP;User=ASP;Password=MaAs3P4$$;TrustServerCertificate=True;
+      - Serilog__WriteTo__0__Args__configureLogger__WriteTo__0__Args__databaseUrl=mongodb://mongodb:27017/asplogs
+      - Serilog__WriteTo__0__Args__configureLogger__WriteTo__0__Args__collectionName=http_logs
       - Mongo__ConnectionString=mongodb://mongodb:27017
       - Mongo__DatabaseName=asplogs
+      - Mongo_CollectionName=http_logs
     ports:
       - "8080:8080"
     depends_on:
-      - sqlserver
-      - mongodb
+      sqlserver:
+        condition: service_healthy
+      mongodb: 
+        condition: service_started
 
   worker:
     build:
-      context: ./MissionLogGeneratorService
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: MissionLogGeneratorService/Dockerfile
     environment:
       - Mongo__ConnectionString=mongodb://mongodb:27017
       - Mongo__DatabaseName=asplogs
@@ -40,3 +67,6 @@ services:
     depends_on:
       - api
       - mongodb
+
+volumes:
+  mssqldata:
