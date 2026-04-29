@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "${SQL_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
+  mongodb:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_DATABASE: asplogs
+    ports:
+      - "27017:27017"
+
+  api:
+    build:
+      context: ./AarhusSpaceProgram.MissionManagement.Api
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MissionManagementASP;User=sa;Password=${SQL_PASSWORD};
+      - Mongo__ConnectionString=mongodb://mongodb:27017
+      - Mongo__DatabaseName=asplogs
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+      - mongodb
+
+  worker:
+    build:
+      context: ./MissionLogGeneratorService
+      dockerfile: Dockerfile
+    environment:
+      - Mongo__ConnectionString=mongodb://mongodb:27017
+      - Mongo__DatabaseName=asplogs
+      - AspMissionManagementApiBaseUrl=http://api:8080
+    depends_on:
+      - api
+      - mongodb
