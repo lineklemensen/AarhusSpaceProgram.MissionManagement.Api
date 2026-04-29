@@ -1,0 +1,5 @@
+name: AarhusSpaceProgram
+values:
+  - key: baseUrl
+    value: ''
+color: 240

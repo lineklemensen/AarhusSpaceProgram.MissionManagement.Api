@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: fc30e922-35b2-4047-855a-ed3995d3bc6d
+
+localResources:
+  specs:
+    - ..\AarhusSpaceProgram.MissionManagement.Api\obj\Debug\net10.0\EndpointInfo\AarhusSpaceProgram.MissionManagement.Api.json
