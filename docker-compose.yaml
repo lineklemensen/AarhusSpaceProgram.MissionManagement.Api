@@ -8,26 +8,25 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - mssqldata:/var/opt/mssql  # BRUG Docker-managed named volume!
+      - mssqldata:/var/opt/mssql 
       - ./create-db-user.sql:/init/create-db-user.sql
-      - ./run-init-sql.sh:/init/run-init-sql.sh
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_PASSWORD}", "-Q", "select 1"]
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "sqlserver", "-U", "sa", "-P", "${SQL_PASSWORD}", "-Q", "select 1"]
       interval: 10s
-      start_period: 10s
+      start_period: 30s
       retries: 10
 
   db-init:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql-tools:latest
     depends_on:
       sqlserver:
         condition: service_healthy
-    entrypoint: ["/init/run-init-sql.sh"]
+    entrypoint: ["/bin/bash", "-c", "sleep 5 && /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${SQL_PASSWORD} -i /init/create-db-user.sql"]
     environment:
       SA_PASSWORD: ${SQL_PASSWORD}
     volumes:
+      - ./init.db.sh:/init/init-db.sh
       - ./create-db-user.sql:/init/create-db-user.sql
-      - ./run-init-sql.sh:/init/run-init-sql.sh
     restart: "no"
 
   mongodb:
